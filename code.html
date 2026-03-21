@@ -366,7 +366,7 @@
             });
         });
 
-        // --- 4. Interactive Progress Buttons --- //
+        // --- 4. Interactive Progress Buttons & Drag-Drop --- //
         function updateCounters() {
             columns.forEach(col => {
                 const countBadge = col.querySelector('.badge-counter');
@@ -377,49 +377,103 @@
             });
         }
 
+        function atualizarAcoesCartao(card, targetColId) {
+            const btn = card.querySelector('button');
+            const grid = card.querySelector('.action-grid');
+            const targetBtn = btn || grid;
+            
+            if (!targetBtn) return;
+            
+            if (targetColId === 'col-andamento') {
+                targetBtn.outerHTML = `<button onclick="avancarCartao(this, 'col-separado')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                    Finalizar Embalagem <span class="material-symbols-outlined text-sm">check_circle</span>
+                </button>`;
+                if (!card.querySelector('.prog-bar')) {
+                    const progressHtml = `<div class="mb-2 prog-bar"><div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5"><div class="bg-tertiary h-1.5 rounded-full" style="width: 20%"></div></div></div>`;
+                    card.querySelector('.space-y-3')?.insertAdjacentHTML('beforebegin', progressHtml);
+                }
+            } 
+            else if (targetColId === 'col-separado') {
+                const prog = card.querySelector('.prog-bar'); if(prog) prog.remove();
+                targetBtn.outerHTML = `<div class="grid grid-cols-2 gap-2 mt-2 action-grid">
+                    <button onclick="avancarCartao(this, 'col-enviado')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                        <span class="material-symbols-outlined text-xs">local_shipping</span> Entrega
+                    </button>
+                    <button onclick="avancarCartao(this, 'col-concluido')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                        <span class="material-symbols-outlined text-xs">store</span> Retirada
+                    </button>
+                </div>`;
+            }
+            else if (targetColId === 'col-enviado') {
+                targetBtn.outerHTML = `<button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-2 bg-primary dark:bg-blue-600 text-white rounded-lg text-xs font-bold mt-2 hover:opacity-90 transition-all">Marcar como Entregue</button>`;
+            }
+            else if (targetColId === 'col-concluido') {
+                card.className = "card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80 transition-all duration-300";
+                card.innerHTML = `<div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">Concluído</span>
+                        <span class="material-symbols-outlined text-green-600">task_alt</span>
+                    </div>
+                    <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
+                        <p>Entregue com sucesso nesta sessão</p>
+                    </div>`;
+            }
+        }
+
         function avancarCartao(btn, targetColId) {
             const card = btn.closest('.card');
             const targetContainer = document.getElementById(targetColId).querySelector('.kanban-cards');
             
             card.style.opacity = '0.5';
             setTimeout(() => {
-                if (targetColId === 'col-andamento') {
-                    btn.innerHTML = `Finalizar Embalagem <span class="material-symbols-outlined text-sm">check_circle</span>`;
-                    btn.setAttribute('onclick', "avancarCartao(this, 'col-separado')");
-                    // Adiciona barra de progresso visualmente
-                    const progressHtml = `<div class="mb-2 prog-bar"><div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5"><div class="bg-tertiary h-1.5 rounded-full" style="width: 20%"></div></div></div>`;
-                    card.querySelector('.space-y-3').insertAdjacentHTML('beforebegin', progressHtml);
-                } 
-                else if (targetColId === 'col-separado') {
-                    const prog = card.querySelector('.prog-bar'); if(prog) prog.remove();
-                    btn.outerHTML = `<div class="grid grid-cols-2 gap-2 mt-2 action-grid">
-                        <button onclick="avancarCartao(this, 'col-enviado')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                            <span class="material-symbols-outlined text-xs">local_shipping</span> Entrega
-                        </button>
-                        <button onclick="avancarCartao(this, 'col-concluido')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                            <span class="material-symbols-outlined text-xs">store</span> Retirada
-                        </button>
-                    </div>`;
-                }
-                else if (targetColId === 'col-enviado') {
-                    const grid = btn.closest('.action-grid') || btn;
-                    grid.outerHTML = `<button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-2 bg-primary dark:bg-blue-600 text-white rounded-lg text-xs font-bold mt-2 hover:opacity-90 transition-all">Marcar como Entregue</button>`;
-                }
-                else if (targetColId === 'col-concluido') {
-                    card.className = "card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80 transition-all duration-300";
-                    card.innerHTML = `<div class="flex justify-between items-start mb-3">
-                            <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">Concluído</span>
-                            <span class="material-symbols-outlined text-green-600">task_alt</span>
-                        </div>
-                        <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
-                            <p>Entregue com sucesso nesta sessão</p>
-                        </div>`;
-                }
+                atualizarAcoesCartao(card, targetColId);
                 targetContainer.appendChild(card);
                 card.style.opacity = '1';
                 updateCounters();
             }, 250);
         }
+
+        // Drag and Drop Logic
+        let draggedCard = null;
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.setAttribute('draggable', 'true');
+            
+            card.addEventListener('dragstart', () => {
+                draggedCard = card;
+                setTimeout(() => card.style.opacity = '0.5', 0);
+            });
+            
+            card.addEventListener('dragend', () => {
+                draggedCard = null;
+                card.style.opacity = '1';
+                document.querySelectorAll('.kanban-cards').forEach(c => c.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60'));
+            });
+        });
+
+        document.querySelectorAll('.kanban-cards').forEach(container => {
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Necessary to allow dropping
+                container.classList.add('bg-surface-dim/20', 'dark:bg-gray-800/60');
+            });
+
+            container.addEventListener('dragleave', () => {
+                container.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60');
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                container.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60');
+                
+                if (draggedCard) {
+                    const targetCol = container.closest('.kanban-column');
+                    if (targetCol) {
+                        container.appendChild(draggedCard);
+                        atualizarAcoesCartao(draggedCard, targetCol.id);
+                        updateCounters();
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
