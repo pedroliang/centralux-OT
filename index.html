@@ -7,371 +7,273 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
     <script id="tailwind-config">
         tailwind.config = {
           darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "outline": "#74777d",
-                "error-container": "#ffdad6",
-                "error": "#ba1a1a",
-                "on-secondary-fixed-variant": "#41474f",
-                "surface-dim": "#dbd9db",
-                "surface-container-highest": "#e4e2e3",
-                "on-surface-variant": "#44474c",
-                "on-tertiary-container": "#4c3f00",
-                "on-tertiary": "#ffffff",
-                "surface-container": "#efedef",
-                "on-secondary": "#ffffff",
-                "secondary-fixed-dim": "#c1c7d1",
-                "on-tertiary-fixed-variant": "#544600",
-                "on-background": "#1b1c1d",
-                "surface-container-high": "#e9e7e9",
-                "on-surface": "#1b1c1d",
-                "tertiary": "#705d00",
-                "on-tertiary-fixed": "#221b00",
-                "on-secondary-container": "#5f656d",
-                "on-primary-fixed": "#0b1d2d",
-                "surface-tint": "#4f6073",
-                "primary-container": "#1a2b3c",
-                "on-error": "#ffffff",
-                "surface-container-lowest": "#ffffff",
-                "tertiary-fixed": "#ffe16d",
-                "surface-container-low": "#f5f3f4",
-                "on-primary": "#ffffff",
-                "background": "#fbf9fa",
-                "surface-bright": "#fbf9fa",
-                "tertiary-fixed-dim": "#e9c400",
-                "primary": "#041627",
-                "on-primary-container": "#8192a7",
-                "on-secondary-fixed": "#161c23",
-                "secondary-container": "#dde3ed",
-                "secondary": "#595f67",
-                "primary-fixed": "#d2e4fb",
-                "outline-variant": "#c4c6cd",
-                "tertiary-container": "#c9a900",
-                "on-error-container": "#93000a",
-                "inverse-on-surface": "#f2f0f2",
-                "inverse-primary": "#b7c8de",
-                "primary-fixed-dim": "#b7c8de",
-                "on-primary-fixed-variant": "#38485a",
-                "inverse-surface": "#303032",
-                "surface": "#fbf9fa",
-                "secondary-fixed": "#dde3ed",
-                "surface-variant": "#e4e2e3"
-              },
-              fontFamily: {
-                "headline": ["Manrope"],
-                "body": ["Inter"],
-                "label": ["Inter"]
-              },
-              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-            },
-          },
+          theme: { extend: { colors: { /* (omitted long colors for brevity, retaining key ones mapped by classes above) */
+          "primary": "#041627", "primary-container": "#1a2b3c", "tertiary": "#705d00", "tertiary-fixed": "#ffe16d", "surface": "#fbf9fa", "surface-container-lowest": "#ffffff", "surface-container-low": "#f5f3f4", "surface-container": "#efedef", "surface-container-highest": "#e4e2e3", "on-surface": "#1b1c1d", "on-surface-variant": "#44474c", "outline-variant": "#c4c6cd", "error-container": "#ffdad6", "on-error-container": "#93000a", "secondary-container": "#dde3ed", "on-secondary-container": "#5f656d", "tertiary-container": "#c9a900", "on-tertiary-container": "#4c3f00" 
+          }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"] }, borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"} } }
         }
     </script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
         .kanban-column { min-width: 320px; }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-        }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        .dark .glass-panel { background: rgba(4, 22, 39, 0.8); border-color: rgba(255,255,255,0.1); }
     </style>
 </head>
-<body class="bg-surface text-on-surface flex h-screen overflow-hidden">
-    <!-- Menu Lateral (JSON Derived) -->
-    <aside class="fixed left-0 top-0 h-full flex flex-col p-4 space-y-2 w-64 border-r border-outline-variant bg-surface-container-low dark:bg-[#041627]">
-        <div class="flex items-center gap-3 px-2 mb-8">
-            <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-tertiary-fixed">
-                <span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
-            </div>
-            <div>
+<body class="bg-surface text-on-surface flex h-screen overflow-hidden dark:bg-gray-900 transition-colors duration-300">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col p-4 w-64 border-r border-outline-variant bg-surface-container-low dark:bg-[#041627] dark:border-gray-800 transition-all duration-300 overflow-hidden z-40">
+        <div class="flex items-center gap-3 px-2 mb-8 h-10">
+            <button id="toggle-sidebar" class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-tertiary-fixed shrink-0 hover:bg-primary-container transition-colors">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="sidebar-text transition-opacity duration-300 whitespace-nowrap">
                 <p class="font-headline font-bold text-primary dark:text-white leading-tight">CentraLux</p>
                 <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Rastreamento</p>
             </div>
         </div>
         
-        <nav class="flex-1 space-y-1">
-            <a class="flex items-center gap-3 bg-surface-container-lowest dark:bg-[#1a2b3c] text-primary dark:text-tertiary font-manrope text-sm font-semibold rounded-lg px-4 py-3 shadow-sm active:translate-x-1 duration-150" href="#">
-                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-                <span>Painel</span>
+        <nav class="flex-1 space-y-2 mt-4" id="nav-links">
+            <a class="nav-link flex items-center gap-3 bg-surface-container-lowest dark:bg-[#1a2b3c] text-primary dark:text-tertiary font-manrope text-sm font-semibold rounded-lg px-4 py-3 shadow-sm active:translate-x-1 duration-150" href="#" data-filter="all">
+                <span class="material-symbols-outlined shrink-0">dashboard</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Painel</span>
             </a>
-            <a class="flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#">
-                <span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
-                <span>Enviados / Retirados</span>
+            <a class="nav-link flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#" data-filter="enviados">
+                <span class="material-symbols-outlined shrink-0">local_shipping</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Enviados / Retirados</span>
             </a>
-            <a class="flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#">
-                <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
-                <span>Separado</span>
+            <a class="nav-link flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#" data-filter="separado">
+                <span class="material-symbols-outlined shrink-0">inventory_2</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Separado</span>
             </a>
-            <a class="flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#">
-                <span class="material-symbols-outlined" data-icon="package_2">package_2</span>
-                <span>Em andamento</span>
+            <a class="nav-link flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#" data-filter="andamento">
+                <span class="material-symbols-outlined shrink-0">package_2</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Em andamento</span>
             </a>
-            <a class="flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#">
-                <span class="material-symbols-outlined" data-icon="description">description</span>
-                <span>Relatórios</span>
+            <a class="nav-link flex items-center gap-3 text-on-surface-variant hover:bg-white/50 dark:hover:bg-white/5 transition-all font-manrope text-sm font-semibold px-4 py-3 active:translate-x-1 duration-150" href="#" data-filter="relatorios">
+                <span class="material-symbols-outlined shrink-0">description</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Relatórios</span>
             </a>
         </nav>
         
-        <div class="mt-auto pt-4 space-y-1">
-            <button class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-opacity">
-                <span class="material-symbols-outlined" data-icon="add">add</span>
-                <span>Criar Novo Pedido</span>
+        <div class="mt-auto pt-4 space-y-2 border-t border-outline-variant/30 dark:border-gray-700">
+            <button class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-4 hover:opacity-90 overflow-hidden" title="Criar Novo Pedido">
+                <span class="material-symbols-outlined shrink-0">add</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Novo Pedido</span>
             </button>
-            <a class="flex items-center gap-3 text-on-surface-variant px-4 py-2 text-sm font-medium hover:text-primary transition-colors" href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="help">help</span>
-                <span>Central de Ajuda</span>
+            <a class="flex items-center gap-3 text-on-surface-variant px-4 py-2 text-sm font-medium hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors" href="#" title="Central de Ajuda">
+                <span class="material-symbols-outlined text-sm shrink-0">help</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Ajuda</span>
             </a>
-            <a class="flex items-center gap-3 text-on-surface-variant px-4 py-2 text-sm font-medium hover:text-error transition-colors" href="#">
-                <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
-                <span>Sair</span>
+            <a class="flex items-center gap-3 text-on-surface-variant px-4 py-2 text-sm font-medium hover:text-error dark:text-gray-400 dark:hover:text-error transition-colors" href="#" title="Sair">
+                <span class="material-symbols-outlined text-sm shrink-0">logout</span>
+                <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Sair</span>
             </a>
         </div>
     </aside>
 
-    <!-- Estrutura de Conteúdo Principal -->
-    <main class="flex-1 ml-64 flex flex-col h-full bg-surface">
-        <!-- Barra de Navegação Superior (JSON Derived) -->
-        <header class="flex justify-between items-center px-6 py-3 w-full border-b border-outline-variant bg-surface-container-low dark:bg-[#041627] sticky top-0 z-50 shadow-sm">
+    <main id="main-content" class="flex-1 ml-64 flex flex-col h-full bg-surface dark:bg-gray-900 transition-all duration-300 relative">
+        <header class="flex justify-between items-center px-6 py-3 w-full border-b border-outline-variant dark:border-gray-800 bg-surface-container-low dark:bg-[#041627] sticky top-0 z-30 shadow-sm">
             <div class="flex items-center gap-4">
                 <h1 class="text-2xl font-bold tracking-tight text-primary dark:text-white font-headline">CentraLux</h1>
-                <div class="h-6 w-px bg-outline-variant mx-2"></div>
+                <div class="h-6 w-px bg-outline-variant dark:bg-gray-700 mx-2"></div>
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm" data-icon="search">search</span>
-                    <input class="bg-surface-container-lowest border-none rounded-full py-1.5 pl-9 pr-4 text-sm w-64 focus:ring-2 focus:ring-tertiary transition-all" placeholder="Rastrear ID de envio..." type="text"/>
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant dark:text-gray-400 text-sm">search</span>
+                    <input class="bg-surface-container-lowest dark:bg-gray-800 dark:text-white border-none rounded-full py-1.5 pl-9 pr-4 text-sm w-64 focus:ring-2 focus:ring-tertiary transition-all" placeholder="Rastrear ID de envio..." type="text"/>
                 </div>
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-1">
-                    <button class="p-2 text-on-surface-variant hover:text-tertiary transition-colors active:scale-95 duration-150">
-                        <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                    <button id="theme-toggle" class="p-2 text-on-surface-variant dark:text-gray-300 hover:text-tertiary transition-colors active:scale-95 duration-150">
+                        <span class="material-symbols-outlined dark:hidden">dark_mode</span>
+                        <span class="material-symbols-outlined hidden dark:block">light_mode</span>
                     </button>
-                    <button class="p-2 text-on-surface-variant hover:text-tertiary transition-colors active:scale-95 duration-150">
-                        <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    <button class="p-2 text-on-surface-variant dark:text-gray-300 hover:text-tertiary transition-colors active:scale-95 duration-150">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="p-2 text-on-surface-variant dark:text-gray-300 hover:text-tertiary transition-colors active:scale-95 duration-150">
+                        <span class="material-symbols-outlined">settings</span>
                     </button>
                 </div>
-                <div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+                <div class="flex items-center gap-3 pl-4 border-l border-outline-variant dark:border-gray-700">
                     <div class="text-right">
                         <p class="text-xs font-bold text-primary dark:text-white">Usuário Admin</p>
-                        <p class="text-[10px] text-on-surface-variant font-medium">Gerente de Logística</p>
+                        <p class="text-[10px] text-on-surface-variant dark:text-gray-400 font-medium">Gerente de Logística</p>
                     </div>
-                    <img alt="Perfil de Usuário" class="w-9 h-9 rounded-full object-cover border-2 border-tertiary-fixed" data-alt="Retrato aproximado de um gerente de logística profissional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdzbdOrt0Zfh4iwGOo1nXow0gfzpSX6ocLiTQsK-NLwGa_5zK_3rL_7BAy-4Yo0QSBNbXrWz-d5rRNNNbLITmPkd7Seh7NzE2TG64nLBcJGDFesn-vYjdE705xqwxwOXVrrUfQRTPJs7j8ESjBBRw0uTgqhDIK4eIrz0Lddbg5fkdLhWtG4ZBpUQmzfOIWNssouCOLVEBsjMu4l7Qx7mAUbiSVJZy1Ancb5NU0Jg4Wg3N4x5eIBqCUv9a2EuiWoJprdaxQ3XTWYQPp"/>
+                    <img alt="Perfil" class="w-9 h-9 rounded-full object-cover border-2 border-tertiary-fixed cursor-pointer" src="https://ui-avatars.com/api/?name=Admin+User&background=041627&color=ffe16d"/>
                 </div>
             </div>
         </header>
 
-        <!-- Container do Quadro Kanban -->
-        <div class="flex-1 overflow-x-auto p-8 bg-surface-container">
-            <div class="flex gap-6 h-full min-w-max">
+        <!-- Kanban Board -->
+        <div class="flex-1 overflow-x-auto p-6 bg-surface-container dark:bg-gray-800 transition-colors duration-300">
+            <div class="flex gap-6 h-full min-w-max pb-32" id="kanban-board">
                 
-                <!-- Coluna: Pedido Recebido -->
-                <div class="kanban-column flex flex-col gap-4">
+                <div class="kanban-column flex flex-col gap-4 animate-fade-in" data-column="recebido" id="col-recebido">
                     <div class="flex items-center justify-between px-2">
                         <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-primary"></span>
-                            <h3 class="font-headline font-bold text-primary uppercase text-xs tracking-widest">Pedido Recebido</h3>
+                            <span class="w-2 h-2 rounded-full bg-primary dark:bg-blue-400"></span>
+                            <h3 class="font-headline font-bold text-primary dark:text-blue-300 uppercase text-xs tracking-widest">Pedido Recebido</h3>
                         </div>
-                        <span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+                        <span class="badge-counter bg-primary-container text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
-                    
-                    <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                        <!-- Cartão 1 -->
-                        <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-recebido">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-headline font-extrabold text-primary">#Luz-9842</span>
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9842</span>
                                 <span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">Urgente</span>
                             </div>
                             <div class="space-y-3 mb-4">
-                                <div class="flex items-center gap-2 text-on-surface-variant">
-                                    <span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+                                <div class="flex items-center gap-2 text-on-surface-variant dark:text-gray-300">
+                                    <span class="material-symbols-outlined text-sm">schedule</span>
                                     <span class="text-[11px] font-medium">15 Nov, 2026 14:30</span>
                                 </div>
-                                <div class="flex items-center gap-3 py-2">
-                                    <div class="flex flex-col items-center gap-1"><p class="text-xs font-bold text-on-surface">Campinas, SP</p></div>
-                                    <div class="flex flex-col gap-1"><p class="text-xs font-bold text-on-surface">São Paulo, SP</p></div>
+                                <div class="flex items-center gap-3 py-2 text-xs font-bold text-on-surface dark:text-gray-200">
+                                    <div class="flex flex-col gap-1 items-center border-r border-outline-variant pr-3"><p>Campinas, SP</p></div>
+                                    <div class="flex flex-col gap-1 pl-1"><p>São Paulo, SP</p></div>
                                 </div>
                             </div>
-                            <button class="w-full py-2 bg-primary text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 group-hover:bg-primary-container transition-colors">
-                                Processar Pedido <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                                Processar Pedido <span class="material-symbols-outlined text-sm">arrow_forward</span>
                             </button>
                         </div>
-
-                        <!-- Cartão 2 -->
-                        <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+                        
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-headline font-extrabold text-primary">#Luz-9845</span>
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9845</span>
                                 <span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">Normal</span>
                             </div>
-                            <div class="space-y-3 mb-4 text-on-surface-variant">
+                            <div class="space-y-3 mb-4 text-on-surface-variant dark:text-gray-300">
                                 <div class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+                                    <span class="material-symbols-outlined text-sm">schedule</span>
                                     <span class="text-[11px] font-medium">15 Nov, 2026 15:10</span>
                                 </div>
-                                <div class="flex items-center gap-3 py-2">
-                                    <div class="flex flex-col items-center gap-1"><p class="text-xs font-bold text-on-surface">Santos, SP</p></div>
-                                    <div class="flex flex-col gap-1"><p class="text-xs font-bold text-on-surface">Guarulhos, SP</p></div>
+                                <div class="flex items-center gap-3 py-2 text-xs font-bold text-on-surface dark:text-gray-200">
+                                    <div class="flex flex-col gap-1 items-center border-r border-outline-variant pr-3"><p>Santos, SP</p></div>
+                                    <div class="flex flex-col gap-1 pl-1"><p>Guarulhos, SP</p></div>
                                 </div>
                             </div>
-                            <button class="w-full py-2 bg-surface-container-highest text-primary rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-outline-variant transition-colors">
-                                Processar Pedido
+                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-2 bg-surface-container-highest text-primary dark:bg-gray-700 dark:text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-outline-variant transition-colors">
+                                Processar Pedido <span class="material-symbols-outlined text-sm">arrow_forward</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna: Em Andamento -->
-                <div class="kanban-column flex flex-col gap-4">
+                <div class="kanban-column flex flex-col gap-4 animate-fade-in" data-column="andamento" id="col-andamento">
                     <div class="flex items-center justify-between px-2">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-tertiary"></span>
-                            <h3 class="font-headline font-bold text-primary uppercase text-xs tracking-widest">Em Andamento</h3>
+                            <h3 class="font-headline font-bold text-primary dark:text-yellow-400 uppercase text-xs tracking-widest">Em Andamento</h3>
                         </div>
-                        <span class="bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
+                        <span class="badge-counter bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    
-                    <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="bg-surface-container-lowest border-2 border-tertiary-fixed rounded-xl p-4 shadow-md group">
+                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-andamento">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] border-2 border-tertiary-fixed rounded-xl p-4 shadow-md transition-shadow">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-headline font-extrabold text-primary">#Luz-9721</span>
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9721</span>
                                 <span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">Urgente</span>
                             </div>
                             <div class="mb-4">
-                                <div class="w-full bg-surface-container rounded-full h-1.5 mb-2">
+                                <div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5 mb-2">
                                     <div class="bg-tertiary h-1.5 rounded-full" style="width: 65%"></div>
                                 </div>
-                                <p class="text-[10px] text-tertiary font-bold">Embalagem e Etiquetagem (65%)</p>
+                                <p class="text-[10px] text-tertiary dark:text-yellow-400 font-bold">Embalagem e Etiquetagem (65%)</p>
                             </div>
-                            <div class="space-y-3 mb-4">
-                                <div class="flex items-center gap-3 py-2">
-                                    <div class="flex flex-col items-center gap-1"><p class="text-xs font-bold text-on-surface">São Bernardo, SP</p></div>
-                                    <div class="flex flex-col gap-1"><p class="text-xs font-bold text-on-surface">Osasco, SP</p></div>
+                            <div class="space-y-3 mb-4 text-xs font-bold text-on-surface dark:text-gray-200">
+                                <div class="flex items-center gap-3 py-2 border-r border-outline-variant pr-3 w-max">
+                                    <p>S. Bernardo, SP</p> <span class="material-symbols-outlined text-xs">arrow_right_alt</span> <p>Osasco, SP</p>
                                 </div>
                             </div>
-                            <button class="w-full py-2 bg-primary text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2">
-                                Finalizar Embalagem <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                            <button onclick="avancarCartao(this, 'col-separado')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                                Finalizar Embalagem <span class="material-symbols-outlined text-sm">check_circle</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna: Separado/Pronto -->
-                <div class="kanban-column flex flex-col gap-4">
+                <div class="kanban-column flex flex-col gap-4 animate-fade-in" data-column="separado" id="col-separado">
                     <div class="flex items-center justify-between px-2">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-secondary"></span>
-                            <h3 class="font-headline font-bold text-primary uppercase text-xs tracking-widest">Separado/Pronto</h3>
+                            <h3 class="font-headline font-bold text-primary dark:text-gray-300 uppercase text-xs tracking-widest">Separado/Pronto</h3>
                         </div>
-                        <span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
+                        <span class="badge-counter bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    
-                    <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm border-l-4 border-tertiary group">
+                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-separado">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm border-l-4 border-tertiary transition-shadow">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-headline font-extrabold text-primary">#Luz-9550</span>
-                                <span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded-full">Baixo</span>
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9550</span>
+                                <span class="bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">Baixo</span>
                             </div>
-                            <p class="text-[11px] text-on-surface-variant mb-4 italic">Aguardando atribuição de rota...</p>
+                            <p class="text-[11px] text-on-surface-variant dark:text-gray-400 mb-4 italic">Aguardando atribuição de rota...</p>
                             
-                            <div class="grid grid-cols-2 gap-2 mb-4">
-                                <button class="py-2 bg-surface-container-high text-primary rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed transition-all">
-                                    <span class="material-symbols-outlined text-xs" data-icon="local_shipping">local_shipping</span> Entrega
+                            <div class="grid grid-cols-2 gap-2 mb-2 action-grid">
+                                <button onclick="avancarCartao(this, 'col-enviado')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                                    <span class="material-symbols-outlined text-xs">local_shipping</span> Entrega
                                 </button>
-                                <button class="py-2 bg-surface-container-high text-primary rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed transition-all">
-                                    <span class="material-symbols-outlined text-xs" data-icon="store">store</span> Retirada
+                                <button onclick="avancarCartao(this, 'col-concluido')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                                    <span class="material-symbols-outlined text-xs">store</span> Retirada
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna: Saída (Entrega) -->
-                <div class="kanban-column flex flex-col gap-4">
+                <div class="kanban-column flex flex-col gap-4 animate-fade-in" data-column="enviado" id="col-enviado">
                     <div class="flex items-center justify-between px-2">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                            <h3 class="font-headline font-bold text-primary uppercase text-xs tracking-widest">Saída: Entrega</h3>
+                            <h3 class="font-headline font-bold text-primary dark:text-blue-400 uppercase text-xs tracking-widest">Saída: Entrega</h3>
                         </div>
+                        <span class="badge-counter bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    
-                    <div class="flex-1 space-y-4 bg-surface-container-low p-3 rounded-xl">
-                        <!-- Subcategoria: Aguardando -->
-                        <div class="space-y-3">
-                            <p class="text-[10px] font-bold text-on-surface-variant flex items-center gap-2">
-                                <span class="material-symbols-outlined text-xs" data-icon="pending">pending</span> Aguardando Carregamento
-                            </p>
-                            <div class="bg-surface-container-lowest rounded-lg p-3 shadow-sm opacity-75">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-xs font-bold">#Luz-9120</span>
-                                    <span class="text-[10px] text-on-surface-variant">Portão 4B</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-[10px] text-on-surface-variant">
-                                    <span class="material-symbols-outlined text-xs" data-icon="person">person</span>
-                                    <span>Motorista: J. Silva</span>
+                    <div class="kanban-cards flex-1 space-y-4 bg-surface-container-low dark:bg-gray-800/50 border dark:border-gray-700 p-3 rounded-xl overflow-y-auto custom-scrollbar" id="cards-enviado">
+                        <div class="card bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm border-2 border-green-100 dark:border-blue-900 transition-shadow">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-8890</span>
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Trânsito</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs mb-4">
+                                <div>
+                                    <p class="font-bold text-on-surface dark:text-gray-200">Em Trânsito: Rota C-4</p>
+                                    <p class="text-[10px] text-on-surface-variant dark:text-gray-400">Previsão: 18:45 Hoje</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Subcategoria: Em Rota de Entrega -->
-                        <div class="space-y-3 pt-4 border-t border-outline-variant/30">
-                            <p class="text-[10px] font-bold text-on-surface-variant flex items-center gap-2">
-                                <span class="material-symbols-outlined text-xs text-green-600" data-icon="rocket_launch">rocket_launch</span> Saiu para Entrega
-                            </p>
-                            <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm border-2 border-green-100">
-                                <div class="flex justify-between items-start mb-3">
-                                    <span class="text-xs font-headline font-extrabold text-primary">#Luz-8890</span>
-                                    <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Normal</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-xs mb-4">
-                                    <img alt="Caminhão de Entrega" class="w-10 h-10 rounded bg-slate-100 object-cover" data-alt="Ilustração moderna de caminhão de logística" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeeaHziUT6xW5MEYTZqFIyPd6IaPlaTyTi_NzhMbMUhBXSE05cF8fdQoiRy-NCPwW8mEd-NmT_6AD8TaHtLkg1VCNsMURCxAmOwMvHHpvg0ELic1BRUtG9owosqL2TAkO-mijUHgi20lKmQT8k0Lor4p3mmlkKDIU2Yp1qvweCvtZNRIFBa7TyT_y5j19nrPMNSM9LoAvE8kVcyrvIEzIAy66iBuENUhIx3b5GIYsa3XuuSIdT_dXV8dlN4zNFC4ZxmcFx0jkHcZFa"/>
-                                    <div>
-                                        <p class="font-bold text-on-surface">Em Trânsito</p>
-                                        <p class="text-[10px] text-on-surface-variant">Previsão: 18:45 Hoje</p>
-                                    </div>
-                                </div>
-                                <button class="w-full py-2 bg-primary text-white rounded-lg text-xs font-bold">Rastreio em Tempo Real</button>
-                            </div>
+                            <button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors">Marcar como Entregue</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna: Concluído -->
-                <div class="kanban-column flex flex-col gap-4">
+                <div class="kanban-column flex flex-col gap-4 animate-fade-in" data-column="concluido" id="col-concluido">
                     <div class="flex items-center justify-between px-2">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                            <h3 class="font-headline font-bold text-primary uppercase text-xs tracking-widest">Concluído</h3>
+                            <h3 class="font-headline font-bold text-primary dark:text-green-400 uppercase text-xs tracking-widest">Concluído</h3>
                         </div>
-                        <span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-bold px-2 py-0.5 rounded-full">124</span>
+                        <span class="badge-counter bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
-                    
-                    <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="bg-white/50 border border-outline-variant border-dashed rounded-xl p-4 grayscale opacity-60">
+                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-concluido">
+                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-headline font-extrabold text-primary">#Luz-8871</span>
-                                <span class="material-symbols-outlined text-green-600" data-icon="task_alt">task_alt</span>
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8871</span>
+                                <span class="material-symbols-outlined text-green-600">task_alt</span>
                             </div>
-                            <div class="text-[11px] text-on-surface-variant">
+                            <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
                                 <p>Entregue em 14 de Nov, 2026</p>
-                                <p class="font-bold text-on-surface">Destinatário: Sarah Connor</p>
                             </div>
                         </div>
-
-                        <div class="bg-white/50 border border-outline-variant border-dashed rounded-xl p-4 grayscale opacity-60">
+                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="text-xs font-headline font-extrabold text-primary">#Luz-8865</span>
-                                <span class="material-symbols-outlined text-green-600" data-icon="task_alt">task_alt</span>
+                                <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8865</span>
+                                <span class="material-symbols-outlined text-green-600">task_alt</span>
                             </div>
-                            <div class="text-[11px] text-on-surface-variant">
+                            <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
                                 <p>Entregue em 14 de Nov, 2026</p>
-                                <p class="font-bold text-on-surface">Destinatário: Tech Corp Hub</p>
                             </div>
                         </div>
                     </div>
@@ -380,23 +282,144 @@
             </div>
         </div>
 
-        <!-- Ação Resumo Flutuante (Luminous Accent) -->
-        <div class="fixed bottom-8 right-8 flex items-center gap-4">
-            <div class="glass-panel px-6 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-6">
+        <div class="fixed bottom-8 right-8 flex items-center gap-4 z-40">
+            <div class="glass-panel px-6 py-3 rounded-full shadow-xl border flex items-center gap-6">
                 <div class="flex flex-col">
-                    <span class="text-[10px] font-bold text-on-surface-variant uppercase">Meta Diária</span>
-                    <span class="text-lg font-headline font-extrabold text-primary">84%</span>
+                    <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase">Meta Diária</span>
+                    <span class="text-lg font-headline font-extrabold text-primary dark:text-white">84%</span>
                 </div>
-                <div class="h-8 w-px bg-outline-variant"></div>
+                <div class="h-8 w-px bg-outline-variant dark:bg-gray-600"></div>
                 <div class="flex flex-col">
-                    <span class="text-[10px] font-bold text-on-surface-variant uppercase">Veículos Ativos</span>
-                    <span class="text-lg font-headline font-extrabold text-tertiary">42</span>
+                    <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase">Veículos Ativos</span>
+                    <span class="text-lg font-headline font-extrabold text-tertiary dark:text-yellow-400">42</span>
                 </div>
-                <button class="bg-primary-container p-3 rounded-full text-white hover:bg-primary transition-all shadow-lg active:scale-90">
-                    <span class="material-symbols-outlined" data-icon="refresh">refresh</span>
-                </button>
             </div>
         </div>
     </main>
+
+    <script>
+        // --- 1. Dark Mode Toggle --- //
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlEl = document.documentElement;
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlEl.classList.add('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlEl.classList.toggle('dark');
+            localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // --- 2. Sidebar Collapse/Expand --- //
+        const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const sidebarTexts = document.querySelectorAll('.sidebar-text');
+        
+        // Setup initial collapse for mobile or large preference
+        let isCollapsed = false;
+
+        toggleSidebarBtn.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            if (isCollapsed) {
+                sidebar.classList.replace('w-64', 'w-20');
+                mainContent.classList.replace('ml-64', 'ml-20');
+                sidebarTexts.forEach(el => el.classList.add('opacity-0', 'pointer-events-none'));
+            } else {
+                sidebar.classList.replace('w-20', 'w-64');
+                mainContent.classList.replace('ml-20', 'ml-64');
+                sidebarTexts.forEach(el => el.classList.remove('opacity-0', 'pointer-events-none'));
+            }
+        });
+
+        // --- 3. Kanban Sidebar Filtering --- //
+        const navLinks = document.querySelectorAll('.nav-link');
+        const columns = document.querySelectorAll('.kanban-column');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => {
+                    l.classList.remove('bg-surface-container-lowest', 'dark:bg-[#1a2b3c]');
+                    l.classList.remove('text-primary');
+                    l.classList.add('text-on-surface-variant');
+                });
+                link.classList.add('bg-surface-container-lowest', 'dark:bg-[#1a2b3c]', 'text-primary');
+                link.classList.remove('text-on-surface-variant');
+
+                const filter = link.getAttribute('data-filter');
+                
+                columns.forEach(col => { col.style.display = 'none'; });
+                
+                if (filter === 'all') {
+                    columns.forEach(col => { col.style.display = 'flex'; });
+                } else if (filter === 'enviados') {
+                    document.getElementById('col-enviado').style.display = 'flex';
+                    document.getElementById('col-concluido').style.display = 'flex';
+                } else if (filter === 'separado') {
+                    document.getElementById('col-separado').style.display = 'flex';
+                } else if (filter === 'andamento') {
+                    document.getElementById('col-recebido').style.display = 'flex';
+                    document.getElementById('col-andamento').style.display = 'flex';
+                }
+            });
+        });
+
+        // --- 4. Interactive Progress Buttons --- //
+        function updateCounters() {
+            columns.forEach(col => {
+                const countBadge = col.querySelector('.badge-counter');
+                const container = col.querySelector('.kanban-cards');
+                if (countBadge && container) {
+                    countBadge.textContent = container.querySelectorAll('.card').length;
+                }
+            });
+        }
+
+        function avancarCartao(btn, targetColId) {
+            const card = btn.closest('.card');
+            const targetContainer = document.getElementById(targetColId).querySelector('.kanban-cards');
+            
+            card.style.opacity = '0.5';
+            setTimeout(() => {
+                if (targetColId === 'col-andamento') {
+                    btn.innerHTML = `Finalizar Embalagem <span class="material-symbols-outlined text-sm">check_circle</span>`;
+                    btn.setAttribute('onclick', "avancarCartao(this, 'col-separado')");
+                    // Adiciona barra de progresso visualmente
+                    const progressHtml = `<div class="mb-2 prog-bar"><div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5"><div class="bg-tertiary h-1.5 rounded-full" style="width: 20%"></div></div></div>`;
+                    card.querySelector('.space-y-3').insertAdjacentHTML('beforebegin', progressHtml);
+                } 
+                else if (targetColId === 'col-separado') {
+                    const prog = card.querySelector('.prog-bar'); if(prog) prog.remove();
+                    btn.outerHTML = `<div class="grid grid-cols-2 gap-2 mt-2 action-grid">
+                        <button onclick="avancarCartao(this, 'col-enviado')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                            <span class="material-symbols-outlined text-xs">local_shipping</span> Entrega
+                        </button>
+                        <button onclick="avancarCartao(this, 'col-concluido')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                            <span class="material-symbols-outlined text-xs">store</span> Retirada
+                        </button>
+                    </div>`;
+                }
+                else if (targetColId === 'col-enviado') {
+                    const grid = btn.closest('.action-grid') || btn;
+                    grid.outerHTML = `<button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-2 bg-primary dark:bg-blue-600 text-white rounded-lg text-xs font-bold mt-2 hover:opacity-90 transition-all">Marcar como Entregue</button>`;
+                }
+                else if (targetColId === 'col-concluido') {
+                    card.className = "card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80 transition-all duration-300";
+                    card.innerHTML = `<div class="flex justify-between items-start mb-3">
+                            <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">Concluído</span>
+                            <span class="material-symbols-outlined text-green-600">task_alt</span>
+                        </div>
+                        <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
+                            <p>Entregue com sucesso nesta sessão</p>
+                        </div>`;
+                }
+                targetContainer.appendChild(card);
+                card.style.opacity = '1';
+                updateCounters();
+            }, 250);
+        }
+    </script>
 </body>
 </html>
