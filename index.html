@@ -101,6 +101,16 @@
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant dark:text-gray-400 text-sm">search</span>
                     <input class="bg-surface-container-lowest dark:bg-gray-800 dark:text-white border-none rounded-full py-1.5 pl-9 pr-4 text-sm w-64 focus:ring-2 focus:ring-tertiary transition-all" placeholder="Rastrear ID de envio..." type="text"/>
                 </div>
+                <!-- Zoom Controls -->
+                <div class="flex items-center gap-1 ml-2 bg-surface-container-lowest dark:bg-gray-800/80 rounded-lg p-1 border border-outline-variant dark:border-gray-700">
+                    <button id="zoom-out-btn" class="p-1 text-on-surface-variant hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors rounded hover:bg-surface-container-highest dark:hover:bg-gray-700 active:scale-95 flex" title="Diminuir Zoom">
+                        <span class="material-symbols-outlined text-[16px]">remove</span>
+                    </button>
+                    <span id="zoom-level-text" class="text-[11px] font-bold text-on-surface-variant dark:text-gray-300 w-10 text-center select-none cursor-pointer transition-colors hover:text-primary dark:hover:text-white" title="Resetar Zoom" onclick="window.resetZoom()">100%</span>
+                    <button id="zoom-in-btn" class="p-1 text-on-surface-variant hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors rounded hover:bg-surface-container-highest dark:hover:bg-gray-700 active:scale-95 flex" title="Aumentar Zoom">
+                        <span class="material-symbols-outlined text-[16px]">add</span>
+                    </button>
+                </div>
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-1">
@@ -313,6 +323,38 @@
             htmlEl.classList.toggle('dark');
             localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
         });
+
+        // --- 1.5 Kanban Zoom Control --- //
+        let currentZoom = 1;
+        const kanbanBoard = document.getElementById('kanban-board');
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomLevelText = document.getElementById('zoom-level-text');
+
+        function updateZoom() {
+            kanbanBoard.style.zoom = currentZoom;
+            zoomLevelText.textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        zoomOutBtn.addEventListener('click', () => {
+            if (currentZoom > 0.4) {
+                currentZoom -= 0.1;
+                updateZoom();
+            }
+        });
+
+        zoomInBtn.addEventListener('click', () => {
+            if (currentZoom < 1.6) {
+                currentZoom += 0.1;
+                updateZoom();
+            }
+        });
+        
+        window.resetZoom = () => {
+            currentZoom = 1;
+            updateZoom();
+        };
+
 
         // --- 2. Sidebar Collapse/Expand --- //
         const toggleSidebarBtn = document.getElementById('toggle-sidebar');
