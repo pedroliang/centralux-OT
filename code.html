@@ -976,7 +976,10 @@
                     updateCounters();
                 } else {
                     console.error("Erro insert:", error);
-                    alert("Para envio com foto e insert real, certifique-se que o Supabase Storage setup_database ocorreu sem erros.");
+                    alert("ERRO: O Banco de Dados recusou o cadastro! ❌\n\nIsso aconteceu porque as colunas novas (como a de Entrega) ainda não existem no seu Supabase.\n\nPor favor, copie o arquivo 'setup_database.sql' atualizado e execute ele no SQL Editor do Supabase para corrigir.");
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
+                    btn.disabled = false;
+                    return; // Interrompe para não fechar a janela
                 }
             } else {
                 // Fallback UI se nÃ£o tiver DB
