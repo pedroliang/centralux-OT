@@ -39,6 +39,7 @@
         #cards-concluido { border: 2px solid #22c55e !important; box-shadow: 0 0 15px rgba(34,197,94,0.4), inset 0 0 5px rgba(34,197,94,0.1) !important; }
         #cards-concluido .card { border: 2px solid #22c55e !important; box-shadow: 0 0 10px rgba(34,197,94,0.3) !important; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-surface text-on-surface flex h-screen overflow-hidden dark:bg-gray-900 transition-colors duration-300">
     <!-- Sidebar -->
@@ -311,6 +312,10 @@
     </main>
 
     <script>
+        const supabaseUrl = 'https://fruwdnbysjpaccregbnj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydXdkbmJ5c2pwYWNjcmVnYm5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjM3NTIsImV4cCI6MjA4OTY5OTc1Mn0.l7R4DGuXTKIxtDPWGfGvKCLHPIXWt8jTYoN-8eeys34';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // --- 1. Dark Mode Toggle --- //
         const themeToggleBtn = document.getElementById('theme-toggle');
         const htmlEl = document.documentElement;
@@ -509,36 +514,94 @@
         let countEntregas = 142;
         let countRetiradas = 28;
 
+        async function fetchMetrics() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                let { data, error } = await supabase.from('hub_metrics').select('*').eq('date', today).single();
+                if (error && error.code !== 'PGRST116') throw error;
+                if (data) {
+                    countEntregas = data.entregas || 0;
+                    countRetiradas = data.retiradas || 0;
+                }
+                const elE = document.getElementById('widget-entregas');
+                const elR = document.getElementById('widget-retiradas');
+                if(elE) elE.textContent = countEntregas;
+                if(elR) elR.textContent = countRetiradas;
+            } catch(e) { console.warn('fetchMetrics fallback', e.message); }
+        }
+
+        async function updateMetricInDb() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                await supabase.from('hub_metrics').upsert({ date: today, entregas: countEntregas, retiradas: countRetiradas });
+            } catch(e) { console.warn('updateMetricInDb fallback', e.message); }
+        }
+
         function avancarCartao(btn, targetColId) {
             const card = btn.closest('.card');
             const targetContainer = document.getElementById(targetColId).querySelector('.kanban-cards');
             
             const btnText = btn.textContent.toLowerCase();
+            let metricUpdated = false;
+            
             if (btnText.includes('entrega') && !btnText.includes('entregue')) {
                 countEntregas++;
                 const el = document.getElementById('widget-entregas');
                 if(el) el.textContent = countEntregas;
+                metricUpdated = true;
             } else if (btnText.includes('retirada')) {
                 countRetiradas++;
                 const el = document.getElementById('widget-retiradas');
                 if(el) el.textContent = countRetiradas;
+                metricUpdated = true;
+            }
+
+            if (metricUpdated) {
+                updateMetricInDb();
             }
 
             card.style.opacity = '0.5';
-            setTimeout(() => {
+            setTimeout(async () => {
                 atualizarAcoesCartao(card, targetColId);
                 targetContainer.appendChild(card);
                 card.style.opacity = '1';
                 updateCounters();
+                
+                if (card.dataset.dbId) {
+                    await supabase.from('orders').update({ status: targetColId }).eq('id', card.dataset.dbId).catch(console.warn);
+                }
             }, 250);
         }
 
-        // Drag and Drop Logic
-        let draggedCard = null;
-
-        document.querySelectorAll('.card').forEach(card => {
-            card.setAttribute('draggable', 'true');
+        // --- Supabase Dynamic Fetch --- //
+        function createCardElement(order) {
+            const div = document.createElement('div');
+            div.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move";
+            div.dataset.dbId = order.id;
+            div.setAttribute('draggable', 'true');
             
+            let priorityClass = "bg-primary-container text-on-primary-container";
+            if(order.priority === 'Urgente') priorityClass = "bg-error-container text-on-error-container";
+            else if(order.priority === 'Baixo') priorityClass = "bg-surface-variant text-on-surface-variant";
+            else if(order.priority === 'Trânsito') priorityClass = "bg-blue-100 text-blue-800";
+            
+            let extraInfoHtml = '';
+            if (order.delivery_forecast) extraInfoHtml += `<p>Prev: ${order.delivery_forecast}</p>`;
+            if (order.route) extraInfoHtml += `<p>Rota: ${order.route}</p>`;
+
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-headline font-extrabold text-primary dark:text-white">${order.order_id}</span>
+                    <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full">${order.priority}</span>
+                </div>
+                <div class="card-body mb-3 text-[10px] text-on-surface-variant dark:text-gray-400">
+                    ${extraInfoHtml}
+                </div>
+            `;
+            return div;
+        }
+
+        function attachDragListeners(card) {
             card.addEventListener('dragstart', () => {
                 draggedCard = card;
                 setTimeout(() => card.style.opacity = '0.5', 0);
@@ -549,11 +612,40 @@
                 card.style.opacity = '1';
                 document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl'));
             });
-        });
+        }
+
+        async function fetchOrders() {
+            try {
+                const { data, error } = await supabase.from('orders').select('*');
+                if (error) throw error;
+                
+                // Limpa cartões HTML chumbados caso a busca do Supabase funcione
+                document.querySelectorAll('.kanban-cards').forEach(c => c.innerHTML = '');
+
+                data.forEach(order => {
+                    const card = createCardElement(order);
+                    const column = document.getElementById(order.status);
+                    const container = column ? column.querySelector('.kanban-cards') : null;
+                    if (container) {
+                        atualizarAcoesCartao(card, order.status);
+                        container.appendChild(card);
+                        attachDragListeners(card);
+                    }
+                });
+                updateCounters();
+            } catch (err) {
+                console.warn("Supabase schema missing, falling back to static HTML cards:", err.message);
+                // Attach listeners to hardcoded cards fallback
+                document.querySelectorAll('.card').forEach(card => attachDragListeners(card));
+            }
+        }
+
+        // Drag and Drop Logic
+        let draggedCard = null;
 
         document.querySelectorAll('.kanban-column').forEach(column => {
             column.addEventListener('dragover', (e) => {
-                e.preventDefault(); // Necessary to allow dropping
+                e.preventDefault();
                 column.classList.add('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
             });
 
@@ -561,7 +653,7 @@
                 column.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
             });
 
-            column.addEventListener('drop', (e) => {
+            column.addEventListener('drop', async (e) => {
                 e.preventDefault();
                 column.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
                 
@@ -571,10 +663,18 @@
                         targetContainer.appendChild(draggedCard);
                         atualizarAcoesCartao(draggedCard, column.id);
                         updateCounters();
+                        
+                        if (draggedCard.dataset.dbId) {
+                            await supabase.from('orders').update({ status: column.id }).eq('id', draggedCard.dataset.dbId).catch(console.warn);
+                        }
                     }
                 }
             });
         });
+
+        // Initialize Fetch
+        fetchMetrics();
+        fetchOrders();
     </script>
 </body>
 </html>
