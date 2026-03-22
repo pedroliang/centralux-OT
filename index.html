@@ -99,7 +99,7 @@
                 <div class="h-6 w-px bg-outline-variant dark:bg-gray-700 mx-2"></div>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant dark:text-gray-400 text-sm">search</span>
-                    <input class="bg-surface-container-lowest dark:bg-gray-800 dark:text-white border-none rounded-full py-1.5 pl-9 pr-4 text-sm w-64 focus:ring-2 focus:ring-tertiary transition-all" placeholder="Rastrear ID de envio..." type="text"/>
+                    <input id="search-input" class="bg-surface-container-lowest dark:bg-gray-800 dark:text-white border-none rounded-full py-1.5 pl-9 pr-4 text-sm w-64 focus:ring-2 focus:ring-tertiary transition-all" placeholder="Rastrear ID de envio..." type="text"/>
                 </div>
                 <!-- Zoom Controls -->
                 <div class="flex items-center gap-1 ml-2 bg-surface-container-lowest dark:bg-gray-800/80 rounded-lg p-1 border border-outline-variant dark:border-gray-700">
@@ -411,13 +411,32 @@
             });
         });
 
+        // --- 3.5 Rastreio (Search filter) --- //
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.card').forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            updateCounters();
+        });
+
         // --- 4. Interactive Progress Buttons & Drag-Drop --- //
         function updateCounters() {
             columns.forEach(col => {
                 const countBadge = col.querySelector('.badge-counter');
                 const container = col.querySelector('.kanban-cards');
                 if (countBadge && container) {
-                    countBadge.textContent = container.querySelectorAll('.card').length;
+                    let visibleCount = 0;
+                    container.querySelectorAll('.card').forEach(card => {
+                        if (card.style.display !== 'none') visibleCount++;
+                    });
+                    countBadge.textContent = visibleCount;
                 }
             });
         }
