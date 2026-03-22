@@ -192,20 +192,21 @@
                         </div>
                         <span class="badge-counter bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-separado">
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm border-l-4 border-tertiary transition-shadow">
-                            <div class="flex justify-between items-start mb-3">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-separado">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm border-l-4 border-tertiary transition-shadow cursor-move">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9550</span>
                                 <span class="bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">Baixo</span>
                             </div>
-                            <p class="text-[11px] text-on-surface-variant dark:text-gray-400 mb-4 italic">Aguardando atribuição de rota...</p>
-                            
-                            <div class="grid grid-cols-2 gap-2 mb-2 action-grid">
-                                <button onclick="avancarCartao(this, 'col-enviado')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                                    <span class="material-symbols-outlined text-xs">local_shipping</span> Entrega
+                            <div class="card-body mb-2">
+                                <p class="text-[10px] text-on-surface-variant dark:text-gray-400 italic">Aguardando atribuição de rota...</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mt-1 action-grid">
+                                <button onclick="avancarCartao(this, 'col-enviado')" class="py-1.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                                    <span class="material-symbols-outlined text-[13px]">local_shipping</span> Entrega
                                 </button>
-                                <button onclick="avancarCartao(this, 'col-concluido')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                                    <span class="material-symbols-outlined text-xs">store</span> Retirada
+                                <button onclick="avancarCartao(this, 'col-concluido')" class="py-1.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                                    <span class="material-symbols-outlined text-[13px]">store</span> Retirada
                                 </button>
                             </div>
                         </div>
