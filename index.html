@@ -121,44 +121,36 @@
                         </div>
                         <span class="badge-counter bg-primary-container text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-recebido">
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-3">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-recebido">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9842</span>
                                 <span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">Urgente</span>
                             </div>
-                            <div class="space-y-3 mb-4">
+                            <div class="card-body mb-3">
                                 <div class="flex items-center gap-2 text-on-surface-variant dark:text-gray-300">
-                                    <span class="material-symbols-outlined text-sm">schedule</span>
-                                    <span class="text-[11px] font-medium">15 Nov, 2026 14:30</span>
-                                </div>
-                                <div class="flex items-center gap-3 py-2 text-xs font-bold text-on-surface dark:text-gray-200">
-                                    <div class="flex flex-col gap-1 items-center border-r border-outline-variant pr-3"><p>Campinas, SP</p></div>
-                                    <div class="flex flex-col gap-1 pl-1"><p>São Paulo, SP</p></div>
+                                    <span class="material-symbols-outlined text-[12px]">schedule</span>
+                                    <span class="text-[10px] font-medium">15 Nov, 2026 14:30</span>
                                 </div>
                             </div>
-                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
-                                Processar Pedido <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                                Processar <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                             </button>
                         </div>
                         
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-3">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9845</span>
                                 <span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">Normal</span>
                             </div>
-                            <div class="space-y-3 mb-4 text-on-surface-variant dark:text-gray-300">
+                            <div class="card-body mb-3 text-on-surface-variant dark:text-gray-300">
                                 <div class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-sm">schedule</span>
-                                    <span class="text-[11px] font-medium">15 Nov, 2026 15:10</span>
-                                </div>
-                                <div class="flex items-center gap-3 py-2 text-xs font-bold text-on-surface dark:text-gray-200">
-                                    <div class="flex flex-col gap-1 items-center border-r border-outline-variant pr-3"><p>Santos, SP</p></div>
-                                    <div class="flex flex-col gap-1 pl-1"><p>Guarulhos, SP</p></div>
+                                    <span class="material-symbols-outlined text-[12px]">schedule</span>
+                                    <span class="text-[10px] font-medium">15 Nov, 2026 15:10</span>
                                 </div>
                             </div>
-                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-2 bg-surface-container-highest text-primary dark:bg-gray-700 dark:text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-outline-variant transition-colors">
-                                Processar Pedido <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-1.5 bg-surface-container-highest text-primary dark:bg-gray-700 dark:text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-outline-variant transition-colors">
+                                Processar <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                             </button>
                         </div>
                     </div>
@@ -172,25 +164,21 @@
                         </div>
                         <span class="badge-counter bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-andamento">
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] border-2 border-tertiary-fixed rounded-xl p-4 shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-3">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-andamento">
+                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] border-2 border-tertiary-fixed rounded-xl p-3 shadow-md transition-shadow cursor-move">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9721</span>
                                 <span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">Urgente</span>
                             </div>
-                            <div class="mb-4">
-                                <div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5 mb-2">
+                            <div class="mb-2 prog-bar">
+                                <div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5 mb-1.5">
                                     <div class="bg-tertiary h-1.5 rounded-full" style="width: 65%"></div>
                                 </div>
-                                <p class="text-[10px] text-tertiary dark:text-yellow-400 font-bold">Embalagem e Etiquetagem (65%)</p>
+                                <p class="text-[9px] text-tertiary dark:text-yellow-400 font-bold">Embalagem e Etiquetagem (65%)</p>
                             </div>
-                            <div class="space-y-3 mb-4 text-xs font-bold text-on-surface dark:text-gray-200">
-                                <div class="flex items-center gap-3 py-2 border-r border-outline-variant pr-3 w-max">
-                                    <p>S. Bernardo, SP</p> <span class="material-symbols-outlined text-xs">arrow_right_alt</span> <p>Osasco, SP</p>
-                                </div>
-                            </div>
-                            <button onclick="avancarCartao(this, 'col-separado')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
-                                Finalizar Embalagem <span class="material-symbols-outlined text-sm">check_circle</span>
+                            <div class="card-body" style="display: none;"></div>
+                            <button onclick="avancarCartao(this, 'col-separado')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                                Embalar <span class="material-symbols-outlined text-[14px]">check_circle</span>
                             </button>
                         </div>
                     </div>
@@ -232,19 +220,17 @@
                         </div>
                         <span class="badge-counter bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-4 bg-surface-container-low dark:bg-gray-800/50 border dark:border-gray-700 p-3 rounded-xl overflow-y-auto custom-scrollbar" id="cards-enviado">
-                        <div class="card bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm border-2 border-green-100 dark:border-blue-900 transition-shadow">
-                            <div class="flex justify-between items-start mb-3">
+                    <div class="kanban-cards flex-1 space-y-3 bg-surface-container-low dark:bg-gray-800/50 border dark:border-gray-700 p-2 rounded-xl overflow-y-auto custom-scrollbar" id="cards-enviado">
+                        <div class="card bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm border-2 border-green-100 dark:border-blue-900 transition-shadow cursor-move">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-8890</span>
                                 <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Trânsito</span>
                             </div>
-                            <div class="flex items-center gap-3 text-xs mb-4">
-                                <div>
-                                    <p class="font-bold text-on-surface dark:text-gray-200">Em Trânsito: Rota C-4</p>
-                                    <p class="text-[10px] text-on-surface-variant dark:text-gray-400">Previsão: 18:45 Hoje</p>
-                                </div>
+                            <div class="card-body mb-2">
+                                <p class="text-[11px] font-bold text-on-surface dark:text-gray-200">Em Trânsito: Rota C-4</p>
+                                <p class="text-[9px] text-on-surface-variant dark:text-gray-400">Previsão: 18:45 Hoje</p>
                             </div>
-                            <button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors">Marcar como Entregue</button>
+                            <button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors">Marcar como Entregue</button>
                         </div>
                     </div>
                 </div>
@@ -257,22 +243,22 @@
                         </div>
                         <span class="badge-counter bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" id="cards-concluido">
-                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80">
-                            <div class="flex justify-between items-start mb-3">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-concluido">
+                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-3 grayscale opacity-80 cursor-move transition-all duration-300">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8871</span>
-                                <span class="material-symbols-outlined text-green-600">task_alt</span>
+                                <span class="material-symbols-outlined text-green-600 text-sm">task_alt</span>
                             </div>
-                            <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
+                            <div class="card-body text-[10px] text-on-surface-variant dark:text-gray-400">
                                 <p>Entregue em 14 de Nov, 2026</p>
                             </div>
                         </div>
-                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80">
-                            <div class="flex justify-between items-start mb-3">
+                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-3 grayscale opacity-80 cursor-move transition-all duration-300">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8865</span>
-                                <span class="material-symbols-outlined text-green-600">task_alt</span>
+                                <span class="material-symbols-outlined text-green-600 text-sm">task_alt</span>
                             </div>
-                            <div class="text-[11px] text-on-surface-variant dark:text-gray-400">
+                            <div class="card-body text-[10px] text-on-surface-variant dark:text-gray-400">
                                 <p>Entregue em 14 de Nov, 2026</p>
                             </div>
                         </div>
@@ -392,7 +378,7 @@
             card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-move";
             
             // Re-exibe corpo do card se estiver oculto
-            const cardBody = card.querySelector('.space-y-3') || card.querySelector('.flex.items-center.gap-3');
+            const cardBody = card.querySelector('.card-body');
             if(cardBody) {
                 cardBody.style.display = '';
             }
@@ -401,35 +387,35 @@
             let newProgHtml = "";
 
             if (targetColId === 'col-recebido') {
-                newActionHtml = `<button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 mt-2 transition-colors">
-                    Processar Pedido <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                newActionHtml = `<button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 mt-2 transition-colors">
+                    Processar Pedido <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
                 </button>`;
             }
             else if (targetColId === 'col-andamento') {
-                newProgHtml = `<div class="mb-2 prog-bar"><div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5"><div class="bg-tertiary h-1.5 rounded-full" style="width: 20%"></div></div></div>`;
-                newActionHtml = `<button onclick="avancarCartao(this, 'col-separado')" class="w-full py-2 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 mt-2 transition-colors">
-                    Finalizar Embalagem <span class="material-symbols-outlined text-sm">check_circle</span>
+                newProgHtml = `<div class="mb-2 prog-bar"><div class="w-full bg-surface-container dark:bg-gray-700 rounded-full h-1.5 mb-1.5"><div class="bg-tertiary h-1.5 rounded-full" style="width: 20%"></div></div></div>`;
+                newActionHtml = `<button onclick="avancarCartao(this, 'col-separado')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 mt-2 transition-colors">
+                    Embalar <span class="material-symbols-outlined text-[14px]">check_circle</span>
                 </button>`;
             }
             else if (targetColId === 'col-separado') {
                 newActionHtml = `<div class="grid grid-cols-2 gap-2 mt-2 action-grid">
-                    <button onclick="avancarCartao(this, 'col-enviado')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                        <span class="material-symbols-outlined text-xs">local_shipping</span> Entrega
+                    <button onclick="avancarCartao(this, 'col-enviado')" class="py-1.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                        <span class="material-symbols-outlined text-[13px]">local_shipping</span> Entrega
                     </button>
-                    <button onclick="avancarCartao(this, 'col-concluido')" class="py-2 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                        <span class="material-symbols-outlined text-xs">store</span> Retirada
+                    <button onclick="avancarCartao(this, 'col-concluido')" class="py-1.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
+                        <span class="material-symbols-outlined text-[13px]">store</span> Retirada
                     </button>
                 </div>`;
             }
             else if (targetColId === 'col-enviado') {
-                newActionHtml = `<button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-2 bg-primary dark:bg-blue-600 text-white rounded-lg text-xs font-bold mt-2 hover:opacity-90 transition-all">Marcar como Entregue</button>`;
+                newActionHtml = `<button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-1.5 bg-primary dark:bg-blue-600 text-white rounded-lg text-xs font-bold mt-2 hover:opacity-90 transition-all">Marcar como Entregue</button>`;
             }
             else if (targetColId === 'col-concluido') {
-                card.className = "card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-4 grayscale opacity-80 cursor-move transition-all duration-300";
+                card.className = "card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-3 grayscale opacity-80 cursor-move transition-all duration-300";
                 if(cardBody) cardBody.style.display = 'none'; // Minimal UI
                 
                 newActionHtml = `<div class="concluido-msg mt-3 text-[11px] text-center text-on-surface-variant dark:text-gray-400 font-bold">
-                    <span class="material-symbols-outlined text-green-600 text-2xl mb-1 block">task_alt</span>
+                    <span class="material-symbols-outlined text-green-600 text-[20px] mb-1 block">task_alt</span>
                     Entregue com sucesso
                 </div>`;
             }
