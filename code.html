@@ -121,7 +121,7 @@
                         </div>
                         <span class="badge-counter bg-primary-container text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-recebido">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto p-3 custom-scrollbar rounded-xl transition-all" style="border: 2px solid #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.4), inset 0 0 5px rgba(168,85,247,0.1);" id="cards-recebido">
                         <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9842</span>
@@ -164,7 +164,7 @@
                         </div>
                         <span class="badge-counter bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-andamento">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto p-3 custom-scrollbar rounded-xl transition-all" style="border: 2px solid #facc15; box-shadow: 0 0 15px rgba(250,204,21,0.4), inset 0 0 5px rgba(250,204,21,0.1);" id="cards-andamento">
                         <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] border-2 border-tertiary-fixed rounded-xl p-3 shadow-md transition-shadow cursor-move">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9721</span>
@@ -192,7 +192,7 @@
                         </div>
                         <span class="badge-counter bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-separado">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto p-3 custom-scrollbar rounded-xl transition-all border border-outline-variant/30 dark:border-gray-700/50" id="cards-separado">
                         <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm border-l-4 border-tertiary transition-shadow cursor-move">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9550</span>
@@ -221,7 +221,7 @@
                         </div>
                         <span class="badge-counter bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-3 bg-surface-container-low dark:bg-gray-800/50 border dark:border-gray-700 p-2 rounded-xl overflow-y-auto custom-scrollbar" id="cards-enviado">
+                    <div class="kanban-cards flex-1 space-y-3 bg-surface-container-low dark:bg-gray-800/10 p-3 rounded-xl overflow-y-auto custom-scrollbar transition-all" style="border: 2px solid #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.4), inset 0 0 5px rgba(59,130,246,0.1);" id="cards-enviado">
                         <div class="card bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm border-2 border-green-100 dark:border-blue-900 transition-shadow cursor-move">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-8890</span>
@@ -244,7 +244,7 @@
                         </div>
                         <span class="badge-counter bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
-                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar" id="cards-concluido">
+                    <div class="kanban-cards flex-1 space-y-3 overflow-y-auto p-3 custom-scrollbar rounded-xl transition-all" style="border: 2px solid #22c55e; box-shadow: 0 0 15px rgba(34,197,94,0.4), inset 0 0 5px rgba(34,197,94,0.1);" id="cards-concluido">
                         <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-3 grayscale opacity-80 cursor-move transition-all duration-300">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8871</span>
@@ -270,15 +270,15 @@
         </div>
 
         <div class="fixed bottom-8 right-8 flex items-center gap-4 z-40">
-            <div class="glass-panel px-6 py-3 rounded-full shadow-xl border flex items-center gap-6">
-                <div class="flex flex-col">
-                    <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase">Meta Diária</span>
-                    <span class="text-lg font-headline font-extrabold text-primary dark:text-white">84%</span>
+            <div class="glass-panel px-6 py-3 rounded-[2rem] shadow-xl border flex items-center gap-8">
+                <div class="flex flex-col items-start min-w-[80px]">
+                    <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase tracking-widest">Entregas</span>
+                    <span class="text-2xl font-headline font-extrabold text-primary dark:text-white leading-tight">142</span>
                 </div>
-                <div class="h-8 w-px bg-outline-variant dark:bg-gray-600"></div>
-                <div class="flex flex-col">
-                    <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase">Veículos Ativos</span>
-                    <span class="text-lg font-headline font-extrabold text-tertiary dark:text-yellow-400">42</span>
+                <div class="h-10 w-px bg-outline-variant dark:bg-gray-600"></div>
+                <div class="flex flex-col items-start min-w-[80px]">
+                    <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase tracking-widest">Retiradas</span>
+                    <span class="text-2xl font-headline font-extrabold text-tertiary dark:text-yellow-400 leading-tight">28</span>
                 </div>
             </div>
         </div>
