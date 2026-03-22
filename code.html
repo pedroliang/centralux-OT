@@ -314,10 +314,10 @@
     <script>
         const supabaseUrl = 'https://fruwdnbysjpaccregbnj.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydXdkbmJ5c2pwYWNjcmVnYm5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjM3NTIsImV4cCI6MjA4OTY5OTc1Mn0.l7R4DGuXTKIxtDPWGfGvKCLHPIXWt8jTYoN-8eeys34';
-        let supabase = null;
+        let supabaseClient = null;
         try {
             if (window.supabase) {
-                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             } else {
                 console.warn("Supabase SDK not found.");
             }
@@ -524,10 +524,10 @@
         let countRetiradas = 28;
 
         async function fetchMetrics() {
-            if (!supabase) return;
+            if (!supabaseClient) return;
             try {
                 const today = new Date().toISOString().split('T')[0];
-                let { data, error } = await supabase.from('hub_metrics').select('*').eq('date', today).single();
+                let { data, error } = await supabaseClient.from('hub_metrics').select('*').eq('date', today).single();
                 if (error && error.code !== 'PGRST116') throw error;
                 if (data) {
                     countEntregas = data.entregas || 0;
@@ -541,10 +541,10 @@
         }
 
         async function updateMetricInDb() {
-            if (!supabase) return;
+            if (!supabaseClient) return;
             try {
                 const today = new Date().toISOString().split('T')[0];
-                await supabase.from('hub_metrics').upsert({ date: today, entregas: countEntregas, retiradas: countRetiradas });
+                await supabaseClient.from('hub_metrics').upsert({ date: today, entregas: countEntregas, retiradas: countRetiradas });
             } catch(e) { console.warn('updateMetricInDb fallback', e.message); }
         }
 
@@ -578,8 +578,8 @@
                 card.style.opacity = '1';
                 updateCounters();
                 
-                if (card.dataset.dbId && supabase) {
-                    await supabase.from('orders').update({ status: targetColId }).eq('id', card.dataset.dbId).catch(console.warn);
+                if (card.dataset.dbId && supabaseClient) {
+                    await supabaseClient.from('orders').update({ status: targetColId }).eq('id', card.dataset.dbId).catch(console.warn);
                 }
             }, 250);
         }
@@ -613,6 +613,7 @@
         }
 
         function attachDragListeners(card) {
+            card.setAttribute('draggable', 'true');
             card.addEventListener('dragstart', () => {
                 draggedCard = card;
                 setTimeout(() => card.style.opacity = '0.5', 0);
@@ -626,12 +627,12 @@
         }
 
         async function fetchOrders() {
-            if (!supabase) {
+            if (!supabaseClient) {
                 document.querySelectorAll('.card').forEach(card => attachDragListeners(card));
                 return;
             }
             try {
-                const { data, error } = await supabase.from('orders').select('*');
+                const { data, error } = await supabaseClient.from('orders').select('*');
                 if (error) throw error;
                 
                 // Limpa cartões HTML chumbados caso a busca do Supabase funcione
@@ -679,8 +680,8 @@
                         atualizarAcoesCartao(draggedCard, column.id);
                         updateCounters();
                         
-                        if (draggedCard.dataset.dbId && supabase) {
-                            await supabase.from('orders').update({ status: column.id }).eq('id', draggedCard.dataset.dbId).catch(console.warn);
+                        if (draggedCard.dataset.dbId && supabaseClient) {
+                            await supabaseClient.from('orders').update({ status: column.id }).eq('id', draggedCard.dataset.dbId).catch(console.warn);
                         }
                     }
                 }
