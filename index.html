@@ -434,7 +434,7 @@
             if(prog) prog.remove();
 
             // Restaura classes originais caso estivesse em "Concluído"
-            card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-move";
+            card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move";
             
             // Re-exibe corpo do card se estiver oculto
             const cardBody = card.querySelector('.card-body');
@@ -514,29 +514,29 @@
             card.addEventListener('dragend', () => {
                 draggedCard = null;
                 card.style.opacity = '1';
-                document.querySelectorAll('.kanban-cards').forEach(c => c.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60'));
+                document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl'));
             });
         });
 
-        document.querySelectorAll('.kanban-cards').forEach(container => {
-            container.addEventListener('dragover', (e) => {
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            column.addEventListener('dragover', (e) => {
                 e.preventDefault(); // Necessary to allow dropping
-                container.classList.add('bg-surface-dim/20', 'dark:bg-gray-800/60');
+                column.classList.add('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
             });
 
-            container.addEventListener('dragleave', () => {
-                container.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60');
+            column.addEventListener('dragleave', () => {
+                column.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
             });
 
-            container.addEventListener('drop', (e) => {
+            column.addEventListener('drop', (e) => {
                 e.preventDefault();
-                container.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60');
+                column.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
                 
                 if (draggedCard) {
-                    const targetCol = container.closest('.kanban-column');
-                    if (targetCol) {
-                        container.appendChild(draggedCard);
-                        atualizarAcoesCartao(draggedCard, targetCol.id);
+                    const targetContainer = column.querySelector('.kanban-cards');
+                    if (targetContainer) {
+                        targetContainer.appendChild(draggedCard);
+                        atualizarAcoesCartao(draggedCard, column.id);
                         updateCounters();
                     }
                 }
