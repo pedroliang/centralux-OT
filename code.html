@@ -760,7 +760,12 @@
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-headline font-extrabold text-primary dark:text-white flex items-center">${order.order_id}${deliveryIcon}</span>
-                    <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">${order.priority}</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">${order.priority}</span>
+                        <button onclick="deletarPedido(this, '${order.id}')" title="Excluir Pedido" class="text-on-surface-variant hover:text-error dark:text-gray-400 dark:hover:text-red-400 transition-colors flex">
+                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body mb-3 text-[10px] text-on-surface-variant dark:text-gray-400">
                     ${extraInfoHtml}
@@ -768,6 +773,32 @@
                 </div>
             `;
             return div;
+        }
+
+        async function deletarPedido(btn, dbId) {
+            if (!confirm('Tem certeza que deseja apagar este pedido permanentemente?')) return;
+            const card = btn.closest('.card');
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+            
+            if (dbId && dbId !== 'undefined' && supabaseClient) {
+                try {
+                    const { error } = await supabaseClient.from('orders').delete().eq('id', dbId);
+                    if (error) throw error;
+                    
+                    const sourceColId = card.closest('.kanban-column').id;
+                    card.remove();
+                    updateCounters();
+                } catch(err) {
+                    console.error("Erro deletar:", err);
+                    alert("Erro ao excluir do Banco: " + err.message);
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                }
+            } else {
+                card.remove();
+                updateCounters();
+            }
         }
 
         function attachDragListeners(card) {
