@@ -314,7 +314,16 @@
     <script>
         const supabaseUrl = 'https://fruwdnbysjpaccregbnj.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydXdkbmJ5c2pwYWNjcmVnYm5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjM3NTIsImV4cCI6MjA4OTY5OTc1Mn0.l7R4DGuXTKIxtDPWGfGvKCLHPIXWt8jTYoN-8eeys34';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        let supabase = null;
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            } else {
+                console.warn("Supabase SDK not found.");
+            }
+        } catch (err) {
+            console.warn("Supabase Init Error", err);
+        }
 
         // --- 1. Dark Mode Toggle --- //
         const themeToggleBtn = document.getElementById('theme-toggle');
@@ -515,6 +524,7 @@
         let countRetiradas = 28;
 
         async function fetchMetrics() {
+            if (!supabase) return;
             try {
                 const today = new Date().toISOString().split('T')[0];
                 let { data, error } = await supabase.from('hub_metrics').select('*').eq('date', today).single();
@@ -531,6 +541,7 @@
         }
 
         async function updateMetricInDb() {
+            if (!supabase) return;
             try {
                 const today = new Date().toISOString().split('T')[0];
                 await supabase.from('hub_metrics').upsert({ date: today, entregas: countEntregas, retiradas: countRetiradas });
@@ -567,7 +578,7 @@
                 card.style.opacity = '1';
                 updateCounters();
                 
-                if (card.dataset.dbId) {
+                if (card.dataset.dbId && supabase) {
                     await supabase.from('orders').update({ status: targetColId }).eq('id', card.dataset.dbId).catch(console.warn);
                 }
             }, 250);
@@ -615,6 +626,10 @@
         }
 
         async function fetchOrders() {
+            if (!supabase) {
+                document.querySelectorAll('.card').forEach(card => attachDragListeners(card));
+                return;
+            }
             try {
                 const { data, error } = await supabase.from('orders').select('*');
                 if (error) throw error;
@@ -664,7 +679,7 @@
                         atualizarAcoesCartao(draggedCard, column.id);
                         updateCounters();
                         
-                        if (draggedCard.dataset.dbId) {
+                        if (draggedCard.dataset.dbId && supabase) {
                             await supabase.from('orders').update({ status: column.id }).eq('id', draggedCard.dataset.dbId).catch(console.warn);
                         }
                     }
