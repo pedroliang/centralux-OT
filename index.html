@@ -415,10 +415,18 @@
                         </select>
                     </div>
 
-                    <div class="flex items-center gap-3 p-3 bg-error-container/20 dark:bg-red-900/10 border border-error/20 rounded-lg relative overflow-hidden group">
-                        <div id="np-urgente-glow" class="absolute inset-0 bg-error/10 opacity-30 shadow-none transition-all duration-300 pointer-events-none"></div>
-                        <input type="checkbox" id="np-urgente" class="w-5 h-5 text-error rounded border-error/50 focus:ring-error transition-all relative z-10 cursor-pointer" />
-                        <label for="np-urgente" class="text-sm font-bold text-error cursor-pointer relative z-10 select-none">Marcar como Pedido Urgente!</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
+                            <input type="checkbox" id="np-entrega" class="w-5 h-5 text-blue-600 rounded border-blue-300 dark:border-blue-700 focus:ring-blue-500 transition-all cursor-pointer" />
+                            <label for="np-entrega" class="text-xs font-bold text-blue-700 dark:text-blue-400 cursor-pointer select-none flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">local_shipping</span> Entrega
+                            </label>
+                        </div>
+                        <div class="flex items-center gap-2 p-3 bg-error-container/20 dark:bg-red-900/10 border border-error/20 rounded-lg relative overflow-hidden group">
+                            <div id="np-urgente-glow" class="absolute inset-0 bg-error/10 opacity-30 shadow-none transition-all duration-300 pointer-events-none"></div>
+                            <input type="checkbox" id="np-urgente" class="w-5 h-5 text-error rounded border-error/50 focus:ring-error transition-all relative z-10 cursor-pointer" />
+                            <label for="np-urgente" class="text-xs font-bold text-error cursor-pointer relative z-10 select-none">Urgente!</label>
+                        </div>
                     </div>
 
                     <div>
@@ -833,9 +841,11 @@
                 photoIndicators += `</div>`;
             }
 
+            let deliveryIcon = order.is_delivery ? `<span class="material-symbols-outlined text-[14px] text-blue-600 dark:text-blue-400 ml-1.5" title="Pedido para Entrega">local_shipping</span>` : '';
+
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-headline font-extrabold text-primary dark:text-white">${order.order_id}</span>
+                    <span class="text-xs font-headline font-extrabold text-primary dark:text-white flex items-center">${order.order_id}${deliveryIcon}</span>
                     <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">${order.priority}</span>
                 </div>
                 <div class="card-body mb-3 text-[10px] text-on-surface-variant dark:text-gray-400">
@@ -1037,6 +1047,7 @@
             const clientName = document.getElementById('np-cliente').value;
             const salesperson = document.getElementById('np-vendedor').value;
             const isUrgent = document.getElementById('np-urgente').checked;
+            const isDelivery = document.getElementById('np-entrega').checked;
             const photoFile = document.getElementById('np-foto').files[0];
 
             let photoUrl = null;
@@ -1047,6 +1058,7 @@
                 client_name: clientName,
                 salesperson: salesperson,
                 priority: isUrgent ? 'Urgente' : 'Normal',
+                is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
                 start_photo_url: photoUrl
             };
