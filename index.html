@@ -299,12 +299,12 @@
             <div class="glass-panel px-6 py-3 rounded-[2rem] shadow-xl border flex items-center gap-8">
                 <div class="flex flex-col items-start min-w-[80px]">
                     <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase tracking-widest">Entregas</span>
-                    <span class="text-2xl font-headline font-extrabold text-primary dark:text-white leading-tight">142</span>
+                    <span id="widget-entregas" class="text-2xl font-headline font-extrabold text-primary dark:text-white leading-tight">142</span>
                 </div>
                 <div class="h-10 w-px bg-outline-variant dark:bg-gray-600"></div>
                 <div class="flex flex-col items-start min-w-[80px]">
                     <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase tracking-widest">Retiradas</span>
-                    <span class="text-2xl font-headline font-extrabold text-tertiary dark:text-yellow-400 leading-tight">28</span>
+                    <span id="widget-retiradas" class="text-2xl font-headline font-extrabold text-tertiary dark:text-yellow-400 leading-tight">28</span>
                 </div>
             </div>
         </div>
@@ -506,10 +506,24 @@
             }
         }
 
+        let countEntregas = 142;
+        let countRetiradas = 28;
+
         function avancarCartao(btn, targetColId) {
             const card = btn.closest('.card');
             const targetContainer = document.getElementById(targetColId).querySelector('.kanban-cards');
             
+            const btnText = btn.textContent.toLowerCase();
+            if (btnText.includes('entrega') && !btnText.includes('entregue')) {
+                countEntregas++;
+                const el = document.getElementById('widget-entregas');
+                if(el) el.textContent = countEntregas;
+            } else if (btnText.includes('retirada')) {
+                countRetiradas++;
+                const el = document.getElementById('widget-retiradas');
+                if(el) el.textContent = countRetiradas;
+            }
+
             card.style.opacity = '0.5';
             setTimeout(() => {
                 atualizarAcoesCartao(card, targetColId);
