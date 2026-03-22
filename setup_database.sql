@@ -4,6 +4,10 @@ CREATE TABLE IF NOT EXISTS public.orders (
     order_id VARCHAR(50) NOT NULL,
     priority VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
+    client_name VARCHAR(100),
+    salesperson VARCHAR(100),
+    start_photo_url TEXT,
+    end_photo_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     progress INT DEFAULT 0,
     route VARCHAR(100),
@@ -48,3 +52,4 @@ INSERT INTO public.orders (order_id, priority, status, progress, delivery_foreca
 -- Inserir métrica inicial do dia
 INSERT INTO public.hub_metrics (date, entregas, retiradas) VALUES (CURRENT_DATE, 142, 28)
 ON CONFLICT (date) DO NOTHING;
+

@@ -78,7 +78,7 @@
         </nav>
         
         <div class="mt-auto pt-4 space-y-2 border-t border-outline-variant/30 dark:border-gray-700">
-            <button class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-4 hover:opacity-90 overflow-hidden" title="Criar Novo Pedido">
+            <button id="btn-novo-pedido" class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 mb-4 hover:opacity-90 overflow-hidden" title="Criar Novo Pedido">
                 <span class="material-symbols-outlined shrink-0">add</span>
                 <span class="sidebar-text whitespace-nowrap transition-opacity duration-300">Novo Pedido</span>
             </button>
@@ -309,7 +309,179 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modals -->
+        <datalist id="clients-list"></datalist>
+
+        <div id="modal-novo-pedido" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm modal-overlay"></div>
+            <div class="relative bg-surface dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl p-6 border border-outline-variant/30 dark:border-gray-700">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-headline font-bold text-primary dark:text-white">Novo Pedido</h2>
+                    <button class="close-modal text-on-surface-variant hover:text-primary dark:hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="form-novo-pedido" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Cód. do Pedido</label>
+                        <input type="text" id="np-codigo" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all placeholder-gray-400" placeholder="Ex: #Luz-9999">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Cliente</label>
+                        <input type="text" id="np-cliente" list="clients-list" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all placeholder-gray-400" placeholder="Digite ou selecione o cliente...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Vendedor</label>
+                        <select id="np-vendedor" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
+                            <option value="">Selecione o vendedor</option>
+                            <option value="Camila">Camila</option>
+                            <option value="Samuel">Samuel</option>
+                            <option value="Bruno">Bruno</option>
+                            <option value="Silvia">Silvia</option>
+                            <option value="Leandro">Leandro</option>
+                            <option value="Outro">Outro...</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700">
+                        <input type="checkbox" id="np-urgente" class="w-4 h-4 text-tertiary rounded border-gray-300 focus:ring-tertiary dark:border-gray-600 dark:bg-gray-700">
+                        <label for="np-urgente" class="text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer">
+                            Marcar como Urgente
+                            <span id="np-urgente-glow" class="w-3 h-3 rounded-full bg-error-container border border-error transition-all opacity-30 shadow-none"></span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Foto Inicial do Pedido <span class="text-[10px] font-normal">(Sem assinaturas)</span></label>
+                        <input type="file" id="np-foto" accept="image/*" class="w-full text-sm text-on-surface-variant dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:bg-primary/20 dark:file:bg-gray-700 dark:file:text-white transition-all cursor-pointer">
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit" id="btn-salvar-pedido" class="w-full bg-primary text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                            <span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modal-foto-final" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm modal-overlay"></div>
+            <div class="relative bg-surface dark:bg-gray-800 w-full max-w-sm rounded-2xl shadow-2xl p-6 border border-outline-variant/30 dark:border-gray-700 text-center">
+                <span class="material-symbols-outlined text-4xl text-primary dark:text-white mb-2">add_a_photo</span>
+                <h2 class="text-lg font-headline font-bold text-primary dark:text-white mb-2">Finalizar Pedido</h2>
+                <p class="text-xs text-on-surface-variant dark:text-gray-400 mb-4">Deseja anexar uma foto para comprovar a entrega ou retirada?</p>
+                
+                <input type="hidden" id="mf-card-id">
+                <input type="hidden" id="mf-target-col">
+                
+                <input type="file" id="mf-foto" accept="image/*" class="w-full text-sm text-on-surface-variant dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-surface-container-high file:text-primary hover:file:bg-outline-variant/30 dark:file:bg-gray-700 dark:file:text-white transition-all cursor-pointer mb-5">
+                
+                <div class="flex gap-3">
+                    <button type="button" class="close-modal-foto flex-1 py-2 rounded-lg text-sm font-bold text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-gray-700 transition-colors">Pular</button>
+                    <button type="button" id="btn-confirmar-final" class="flex-1 py-2 rounded-lg text-sm font-bold bg-primary text-white hover:opacity-90 transition-opacity">Confirmar</button>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <!-- Modal Novo Pedido -->
+    <div id="modal-novo-pedido" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+        <div class="modal-overlay absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        <div class="relative bg-surface dark:bg-gray-800 w-full max-w-lg mx-4 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/30">
+                <h3 class="text-lg font-bold text-primary dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-tertiary">add_box</span> Novo Pedido
+                </h3>
+                <button class="close-modal text-on-surface-variant hover:text-error dark:hover:text-red-400 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto">
+                <form id="form-novo-pedido" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Código do Pedido</label>
+                        <input type="text" id="np-codigo" required placeholder="Ex: #Luz-1001" class="w-full bg-surface-container-low dark:bg-gray-900 border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-tertiary focus:border-transparent transition-all dark:text-white" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Cliente</label>
+                        <input type="text" id="np-cliente" list="clientes-lista" required placeholder="Nome do Cliente" class="w-full bg-surface-container-low dark:bg-gray-900 border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-tertiary focus:border-transparent transition-all dark:text-white autocomplete="off" />
+                        <datalist id="clientes-lista"></datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Vendedor(a)</label>
+                        <select id="np-vendedor" required class="w-full bg-surface-container-low dark:bg-gray-900 border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-tertiary focus:border-transparent transition-all dark:text-white appearance-none">
+                            <option value="">Selecione...</option>
+                            <option value="Camila">Camila</option>
+                            <option value="Samuel">Samuel</option>
+                            <option value="Bruno">Bruno</option>
+                            <option value="Silvia">Silvia</option>
+                            <option value="Leandro">Leandro</option>
+                            <option value="Outro">Outro...</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-3 p-3 bg-error-container/20 dark:bg-red-900/10 border border-error/20 rounded-lg relative overflow-hidden group">
+                        <div id="np-urgente-glow" class="absolute inset-0 bg-error/10 opacity-30 shadow-none transition-all duration-300 pointer-events-none"></div>
+                        <input type="checkbox" id="np-urgente" class="w-5 h-5 text-error rounded border-error/50 focus:ring-error transition-all relative z-10 cursor-pointer" />
+                        <label for="np-urgente" class="text-sm font-bold text-error cursor-pointer relative z-10 select-none">Marcar como Pedido Urgente!</label>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Foto Inicial (Opcional)</label>
+                        <div class="relative">
+                            <input type="file" id="np-foto" accept="image/*" class="block w-full text-sm text-on-surface-variant dark:text-gray-300
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-xs file:font-bold
+                                file:bg-primary/10 file:text-primary float-left
+                                hover:file:bg-primary/20 transition-all cursor-pointer dark:file:bg-gray-700 dark:file:text-white" />
+                        </div>
+                        <p class="text-[10px] text-on-surface-variant mt-1.5 dark:text-gray-500 hidden md:block">Adicione uma foto do pedido antes das assinaturas para registro.</p>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-outline-variant/30 flex justify-end gap-3 bg-surface-container-lowest dark:bg-[#1a2b3c]">
+                <button type="button" class="close-modal px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors dark:text-gray-300 dark:hover:bg-gray-700">Cancelar</button>
+                <button type="submit" form="form-novo-pedido" id="btn-salvar-pedido" class="px-5 py-2 bg-primary dark:bg-blue-600 text-white text-sm font-bold rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-md">
+                    <span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Final Foto -->
+    <div id="modal-foto-final" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+        <div class="modal-overlay close-modal-foto absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        <div class="relative bg-surface dark:bg-gray-800 w-full max-w-sm mx-4 rounded-xl shadow-2xl border border-outline-variant/30 overflow-hidden transform transition-all flex flex-col">
+            <div class="p-6 text-center">
+                <span class="material-symbols-outlined text-4xl text-green-500 mb-2">check_circle</span>
+                <h3 class="text-lg font-bold text-primary dark:text-white mb-1">Finalizar Pedido</h3>
+                <p class="text-xs text-on-surface-variant dark:text-gray-400 mb-4">Deseja anexar uma foto do canhoto assinado para comprovar a entrega/retirada?</p>
+                
+                <input type="hidden" id="mf-card-id" />
+                <input type="hidden" id="mf-target-col" />
+                
+                <input type="file" id="mf-foto" accept="image/*" class="block w-full text-sm text-on-surface-variant dark:text-gray-300 mb-4
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-xs file:font-bold
+                    file:bg-green-100 file:text-green-700
+                    hover:file:bg-green-200 transition-all cursor-pointer dark:file:bg-green-900/30 dark:file:text-green-400 border border-dashed border-outline-variant p-2 rounded-lg" />
+                    
+                <div class="flex flex-col gap-2">
+                    <button id="btn-confirmar-final" class="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-bold shadow-md hover:bg-green-700 transition-colors flex justify-center items-center gap-2">
+                        Confirmar
+                    </button>
+                    <button type="button" class="close-modal-foto w-full py-2 text-on-surface-variant dark:text-gray-400 hover:bg-surface-container dark:hover:bg-gray-700 rounded-lg text-sm font-bold transition-colors">
+                        Pular (Sem Foto)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const supabaseUrl = 'https://fruwdnbysjpaccregbnj.supabase.co';
@@ -430,8 +602,13 @@
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase().trim();
             document.querySelectorAll('.card').forEach(card => {
-                const cardText = card.textContent.toLowerCase();
-                if (cardText.includes(searchTerm)) {
+                const searchData = [
+                    card.textContent.toLowerCase(),
+                    card.dataset.clientName ? card.dataset.clientName.toLowerCase() : '',
+                    card.dataset.salesperson ? card.dataset.salesperson.toLowerCase() : ''
+                ].join(' ');
+                
+                if (searchData.includes(searchTerm)) {
                     card.style.display = '';
                 } else {
                     card.style.display = 'none';
@@ -453,6 +630,28 @@
                     countBadge.textContent = visibleCount;
                 }
             });
+        }
+
+        function atualizarMetricas(sourceColId, targetColId) {
+            let metricUpdated = false;
+            // Se foi para 'Saída: Entrega'
+            if (targetColId === 'col-enviado' && sourceColId !== 'col-enviado') {
+                countEntregas++;
+                const el = document.getElementById('widget-entregas');
+                if(el) el.textContent = countEntregas;
+                metricUpdated = true;
+            } 
+            // Se foi para 'Concluído' vindo de 'Separado' (Retirada)
+            else if (targetColId === 'col-concluido' && sourceColId === 'col-separado') {
+                countRetiradas++;
+                const el = document.getElementById('widget-retiradas');
+                if(el) el.textContent = countRetiradas;
+                metricUpdated = true;
+            }
+            
+            if (metricUpdated) {
+                updateMetricInDb();
+            }
         }
 
         function atualizarAcoesCartao(card, targetColId) {
@@ -532,6 +731,9 @@
                 if (data) {
                     countEntregas = data.entregas || 0;
                     countRetiradas = data.retiradas || 0;
+                } else {
+                    countEntregas = 0;
+                    countRetiradas = 0;
                 }
                 const elE = document.getElementById('widget-entregas');
                 const elR = document.getElementById('widget-retiradas');
@@ -548,40 +750,60 @@
             } catch(e) { console.warn('updateMetricInDb fallback', e.message); }
         }
 
-        function avancarCartao(btn, targetColId) {
-            const card = btn.closest('.card');
+        function efetivarMovimento(card, targetColId, sourceColId, photoUrl = null) {
             const targetContainer = document.getElementById(targetColId).querySelector('.kanban-cards');
-            
-            const btnText = btn.textContent.toLowerCase();
-            let metricUpdated = false;
-            
-            if (btnText.includes('entrega') && !btnText.includes('entregue')) {
-                countEntregas++;
-                const el = document.getElementById('widget-entregas');
-                if(el) el.textContent = countEntregas;
-                metricUpdated = true;
-            } else if (btnText.includes('retirada')) {
-                countRetiradas++;
-                const el = document.getElementById('widget-retiradas');
-                if(el) el.textContent = countRetiradas;
-                metricUpdated = true;
-            }
-
-            if (metricUpdated) {
-                updateMetricInDb();
-            }
-
             card.style.opacity = '0.5';
             setTimeout(async () => {
+                atualizarMetricas(sourceColId, targetColId);
                 atualizarAcoesCartao(card, targetColId);
                 targetContainer.appendChild(card);
                 card.style.opacity = '1';
                 updateCounters();
                 
                 if (card.dataset.dbId && supabaseClient) {
-                    await supabaseClient.from('orders').update({ status: targetColId }).eq('id', card.dataset.dbId).catch(console.warn);
+                    const updateData = { status: targetColId };
+                    if (photoUrl) {
+                        updateData.end_photo_url = photoUrl;
+                        
+                        // Incrementally add icon to DOM to avoid reloading full board
+                        let body = card.querySelector('.card-body');
+                        // if body is hidden (like in concluido), we still add it to DOM
+                        if(!body) {
+                            body = document.createElement('div');
+                            body.className = "card-body mb-3 text-[10px] text-on-surface-variant dark:text-gray-400";
+                            card.insertBefore(body, card.lastElementChild);
+                        }
+                        
+                        let photoIndicators = body.querySelector('.photo-indicators');
+                        if(!photoIndicators) {
+                            photoIndicators = document.createElement('div');
+                            photoIndicators.className = "photo-indicators flex gap-1 mt-2";
+                            body.appendChild(photoIndicators);
+                        }
+                        photoIndicators.innerHTML += `<a href="${photoUrl}" target="_blank" title="Ver Foto Final" class="w-6 h-6 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 hover:bg-green-200 transition-colors pointer-events-auto"><span class="material-symbols-outlined text-[12px]">add_a_photo</span></a>`;
+                    }
+                    await supabaseClient.from('orders').update(updateData).eq('id', card.dataset.dbId).catch(console.warn);
                 }
             }, 250);
+        }
+
+        function solicitarMovimento(card, targetColId, sourceColId) {
+            if (targetColId === 'col-concluido') {
+                const modal = document.getElementById('modal-foto-final');
+                document.getElementById('mf-card-id').value = card.dataset.dbId || '';
+                document.getElementById('mf-target-col').value = targetColId;
+                window.__pendingCard = card;
+                window.__pendingSourceCol = sourceColId;
+                modal.classList.remove('hidden');
+            } else {
+                efetivarMovimento(card, targetColId, sourceColId);
+            }
+        }
+
+        function avancarCartao(btn, targetColId) {
+            const card = btn.closest('.card');
+            const sourceColId = card.closest('.kanban-column').id;
+            solicitarMovimento(card, targetColId, sourceColId);
         }
 
         // --- Supabase Dynamic Fetch --- //
@@ -589,6 +811,8 @@
             const div = document.createElement('div');
             div.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move";
             div.dataset.dbId = order.id;
+            div.dataset.clientName = order.client_name || '';
+            div.dataset.salesperson = order.salesperson || '';
             div.setAttribute('draggable', 'true');
             
             let priorityClass = "bg-primary-container text-on-primary-container";
@@ -597,16 +821,34 @@
             else if(order.priority === 'Trânsito') priorityClass = "bg-blue-100 text-blue-800";
             
             let extraInfoHtml = '';
+            // Se tiver start time, formatamos
+            if (order.created_at) {
+                const dateObj = new Date(order.created_at);
+                const formatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                extraInfoHtml += `<p class="flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[10px]">schedule</span> Inicio: ${formatter.format(dateObj)}</p>`;
+            }
             if (order.delivery_forecast) extraInfoHtml += `<p>Prev: ${order.delivery_forecast}</p>`;
             if (order.route) extraInfoHtml += `<p>Rota: ${order.route}</p>`;
+            if (order.client_name) extraInfoHtml += `<p class="mt-1 font-bold text-primary dark:text-gray-300">Cliente: ${order.client_name}</p>`;
+            if (order.salesperson) extraInfoHtml += `<p>Vendedor: ${order.salesperson}</p>`;
+
+            // Se tiver fotos atreladas
+            let photoIndicators = '';
+            if (order.start_photo_url || order.end_photo_url) {
+                photoIndicators = `<div class="photo-indicators flex gap-1 mt-2">`;
+                if(order.start_photo_url) photoIndicators += `<a href="${order.start_photo_url}" target="_blank" title="Ver Foto Inicial" class="w-6 h-6 rounded bg-primary/10 dark:bg-gray-700 flex items-center justify-center text-primary dark:text-white hover:bg-primary/20 transition-colors pointer-events-auto"><span class="material-symbols-outlined text-[12px]">image</span></a>`;
+                if(order.end_photo_url) photoIndicators += `<a href="${order.end_photo_url}" target="_blank" title="Ver Foto Final" class="w-6 h-6 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 hover:bg-green-200 transition-colors pointer-events-auto"><span class="material-symbols-outlined text-[12px]">add_a_photo</span></a>`;
+                photoIndicators += `</div>`;
+            }
 
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-headline font-extrabold text-primary dark:text-white">${order.order_id}</span>
-                    <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full">${order.priority}</span>
+                    <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">${order.priority}</span>
                 </div>
                 <div class="card-body mb-3 text-[10px] text-on-surface-variant dark:text-gray-400">
                     ${extraInfoHtml}
+                    ${photoIndicators}
                 </div>
             `;
             return div;
@@ -674,15 +916,10 @@
                 column.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl');
                 
                 if (draggedCard) {
+                    const sourceColId = draggedCard.closest('.kanban-column').id;
                     const targetContainer = column.querySelector('.kanban-cards');
-                    if (targetContainer) {
-                        targetContainer.appendChild(draggedCard);
-                        atualizarAcoesCartao(draggedCard, column.id);
-                        updateCounters();
-                        
-                        if (draggedCard.dataset.dbId && supabaseClient) {
-                            await supabaseClient.from('orders').update({ status: column.id }).eq('id', draggedCard.dataset.dbId).catch(console.warn);
-                        }
+                    if (targetContainer && sourceColId !== column.id) {
+                        solicitarMovimento(draggedCard, column.id, sourceColId);
                     }
                 }
             });
@@ -691,6 +928,207 @@
         // Initialize Fetch
         fetchMetrics();
         fetchOrders();
+        fetchClientsAndSalespersons();
+
+        // --- 5. New Order Feature --- //
+        const modalNovoPedido = document.getElementById('modal-novo-pedido');
+        const btnNovoPedido = document.getElementById('btn-novo-pedido');
+        const npUrgente = document.getElementById('np-urgente');
+        const npUrgenteGlow = document.getElementById('np-urgente-glow');
+        const npVendedor = document.getElementById('np-vendedor');
+
+        // Modal triggers
+        btnNovoPedido.addEventListener('click', () => modalNovoPedido.classList.remove('hidden'));
+        document.querySelectorAll('.close-modal, .modal-overlay').forEach(el => {
+            el.addEventListener('click', () => modalNovoPedido.classList.add('hidden'));
+        });
+
+        // Urgente glow effect
+        npUrgente.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                npUrgenteGlow.classList.remove('opacity-30', 'shadow-none');
+                npUrgenteGlow.classList.add('opacity-100');
+                npUrgenteGlow.style.boxShadow = '0 0 10px #ffdad6, 0 0 20px #93000a';
+            } else {
+                npUrgenteGlow.classList.add('opacity-30', 'shadow-none');
+                npUrgenteGlow.classList.remove('opacity-100');
+                npUrgenteGlow.style.boxShadow = 'none';
+            }
+        });
+
+        // Vendedor "Outro..." custom logic
+        npVendedor.addEventListener('change', (e) => {
+            if (e.target.value === 'Outro') {
+                const customName = prompt('Digite o nome do novo vendedor a ser salvo:');
+                if (customName && customName.trim() !== '') {
+                    const opt = document.createElement('option');
+                    opt.value = customName.trim();
+                    opt.textContent = customName.trim();
+                    npVendedor.insertBefore(opt, npVendedor.lastElementChild);
+                    npVendedor.value = opt.value;
+                } else {
+                    npVendedor.value = '';
+                }
+            }
+        });
+
+        // Generate distinctive list of clients from DB
+        async function fetchClientsAndSalespersons() {
+            if (!supabaseClient) return;
+            try {
+                // To fetch distinct clients efficiently without an RPC, we just select them and unique them in JS
+                const { data, error } = await supabaseClient.from('orders').select('client_name, salesperson');
+                if (data) {
+                    const clients = [...new Set(data.map(d => d.client_name).filter(c => c))];
+                    const listHtml = clients.map(c => `<option value="${c}">`).join('');
+                    document.getElementById('clients-list').innerHTML = listHtml;
+
+                    const salespersons = [...new Set(data.map(d => d.salesperson).filter(s => s))];
+                    const existingOptions = Array.from(npVendedor.options).map(o => o.value);
+                    salespersons.forEach(s => {
+                        if (!existingOptions.includes(s) && s !== 'Outro') {
+                            const opt = document.createElement('option');
+                            opt.value = s;
+                            opt.textContent = s;
+                            npVendedor.insertBefore(opt, npVendedor.lastElementChild);
+                        }
+                    });
+                }
+            } catch (err) { console.warn("Erro ao buscar clientes", err); }
+        }
+
+        // Image Uploader (Fallback to Base64 to bypass Storage error constraints)
+        function processImageToBase64(file, maxWidth = 800) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress to JPEG with 0.6 quality to save DB space
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                        resolve(dataUrl);
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
+        // Save New Order
+        document.getElementById('form-novo-pedido').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar-pedido');
+            btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Salvando...';
+            btn.disabled = true;
+
+            const orderId = document.getElementById('np-codigo').value;
+            const clientName = document.getElementById('np-cliente').value;
+            const salesperson = document.getElementById('np-vendedor').value;
+            const isUrgent = document.getElementById('np-urgente').checked;
+            const photoFile = document.getElementById('np-foto').files[0];
+
+            let photoUrl = null;
+            if (photoFile) photoUrl = await processImageToBase64(photoFile);
+
+            const newOrder = {
+                order_id: orderId,
+                client_name: clientName,
+                salesperson: salesperson,
+                priority: isUrgent ? 'Urgente' : 'Normal',
+                status: 'col-recebido', // Recebido is the default column
+                start_photo_url: photoUrl
+            };
+
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient.from('orders').insert([newOrder]).select();
+                if (!error && data && data.length > 0) {
+                    const card = createCardElement(data[0]);
+                    const container = document.getElementById('col-recebido').querySelector('.kanban-cards');
+                    atualizarAcoesCartao(card, 'col-recebido');
+                    container.appendChild(card);
+                    attachDragListeners(card);
+                    updateCounters();
+                } else {
+                    console.error("Erro insert:", error);
+                    alert("Para envio com foto e insert real, certifique-se que o Supabase Storage setup_database ocorreu sem erros.");
+                }
+            } else {
+                // Fallback UI se não tiver DB
+                const card = createCardElement({...newOrder, id: Date.now()});
+                const container = document.getElementById('col-recebido').querySelector('.kanban-cards');
+                atualizarAcoesCartao(card, 'col-recebido');
+                container.appendChild(card);
+                attachDragListeners(card);
+                updateCounters();
+            }
+            
+            modalNovoPedido.classList.add('hidden');
+            document.getElementById('form-novo-pedido').reset();
+            btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
+            btn.disabled = false;
+        });
+
+        // --- 6. Final Photo Modal Logic --- //
+        const modalFotoFinal = document.getElementById('modal-foto-final');
+        const btnConfirmarFinal = document.getElementById('btn-confirmar-final');
+
+        function fecharModalFoto() {
+            modalFotoFinal.classList.add('hidden');
+            document.getElementById('mf-foto').value = '';
+            btnConfirmarFinal.innerHTML = 'Confirmar';
+            btnConfirmarFinal.disabled = false;
+            window.__pendingCard = null;
+        }
+
+        document.querySelectorAll('.close-modal-foto').forEach(el => {
+            el.addEventListener('click', () => {
+                if (window.__pendingCard) {
+                    const targetCol = document.getElementById('mf-target-col').value;
+                    efetivarMovimento(window.__pendingCard, targetCol, window.__pendingSourceCol);
+                }
+                fecharModalFoto();
+            });
+        });
+
+        btnConfirmarFinal.addEventListener('click', async () => {
+            const file = document.getElementById('mf-foto').files[0];
+            const targetCol = document.getElementById('mf-target-col').value;
+            const card = window.__pendingCard;
+            const sourceCol = window.__pendingSourceCol;
+
+            if (file) {
+                btnConfirmarFinal.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">sync</span> Processando...';
+                btnConfirmarFinal.disabled = true;
+                const photoUrl = await processImageToBase64(file);
+                efetivarMovimento(card, targetCol, sourceCol, photoUrl);
+                fecharModalFoto();
+            } else {
+                // Skip if no file
+                efetivarMovimento(card, targetCol, sourceCol);
+                fecharModalFoto();
+            }
+        });
+
     </script>
 </body>
 </html>
