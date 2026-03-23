@@ -436,6 +436,27 @@
                 <input type="file" id="edit-photo-input" accept="image/*" class="hidden" onchange="handleEditPhoto(event)">
             </div>
         </div>
+
+        <!-- NEW: Report Upload Modal (Paste & Upload) -->
+        <div id="modal-upload-report" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm modal-overlay" onclick="closeReportUploadModal()"></div>
+            <div class="relative bg-surface dark:bg-gray-800 w-full max-w-xs rounded-2xl shadow-2xl p-6 border border-outline-variant/30 dark:border-gray-700 text-center animate-scale-up">
+                <div class="mb-4">
+                    <div class="w-16 h-16 bg-primary/10 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span class="material-symbols-outlined text-3xl text-primary dark:text-blue-400">content_paste_go</span>
+                    </div>
+                    <h2 id="mur-title" class="text-lg font-headline font-bold text-primary dark:text-white">Anexar Foto</h2>
+                    <p class="text-[11px] text-on-surface-variant dark:text-gray-400 mt-1">Cole a imagem (**Ctrl+V**) ou use o botão abaixo</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <button type="button" onclick="document.getElementById('report-photo-input').click()" class="w-full py-2.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-outline-variant/20 transition-all border border-outline-variant/50">
+                        <span class="material-symbols-outlined text-[18px]">folder_open</span> Abrir Arquivos
+                    </button>
+                    <button type="button" onclick="closeReportUploadModal()" class="w-full py-2 text-xs font-medium text-on-surface-variant dark:text-gray-500 hover:text-primary transition-colors">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -1598,7 +1619,14 @@
         function uploadFotoRelatorio(orderId, type) {
             currentReportOrderId = orderId;
             currentReportPhotoType = type;
-            document.getElementById('report-photo-input').click();
+            const modal = document.getElementById('modal-upload-report');
+            const title = document.getElementById('mur-title');
+            title.textContent = type === 'start' ? 'Foto INICIAL' : 'Foto FINAL';
+            modal.classList.remove('hidden');
+        }
+
+        function closeReportUploadModal() {
+            document.getElementById('modal-upload-report').classList.add('hidden');
         }
 
         async function handleReportPhotoUpload(event) {
@@ -1621,6 +1649,7 @@
                 
                 fetchOrders();
                 renderRelatorios();
+                closeReportUploadModal();
                 alert("Foto adicionada com sucesso!");
             } catch(e) {
                 alert("Erro ao adicionar foto: " + e.message);
@@ -1705,6 +1734,7 @@
                     if (!error) {
                         alert("📸 Foto colada e enviada para o Relatório! ✅");
                         renderRelatorios();
+                        closeReportUploadModal();
                     } else {
                         throw error;
                     }
