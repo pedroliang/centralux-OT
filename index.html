@@ -869,22 +869,22 @@
         }
 
         async function deletarPedido(btn, dbId) {
-            if (!confirm('Tem certeza que deseja apagar este pedido permanentemente?')) return;
+            if (!confirm('Deseja remover este pedido do Painel? (Ele continuará disponível nos Relatórios)')) return;
             const card = btn.closest('.card');
             card.style.opacity = '0.5';
             card.style.pointerEvents = 'none';
             
             if (dbId && dbId !== 'undefined' && supabaseClient) {
                 try {
-                    const { error } = await supabaseClient.from('orders').delete().eq('id', dbId);
+                    // Soft Delete: apenas arquiva para sumir do Kanban
+                    const { error } = await supabaseClient.from('orders').update({ archived: true }).eq('id', dbId);
                     if (error) throw error;
                     
-                    const sourceColId = card.closest('.kanban-column').id;
                     card.remove();
                     updateCounters();
                 } catch(err) {
-                    console.error("Erro deletar:", err);
-                    alert("Erro ao excluir do Banco: " + err.message);
+                    console.error("Erro arquivar:", err);
+                    alert("Erro ao remover do Painel: " + err.message);
                     card.style.opacity = '1';
                     card.style.pointerEvents = 'auto';
                 }
@@ -1049,7 +1049,7 @@
                 return;
             }
             try {
-                const { data, error } = await supabaseClient.from('orders').select('*');
+                const { data, error } = await supabaseClient.from('orders').select('*').eq('archived', false);
                 if (error) throw error;
                 
                 // Limpa cartões HTML chumbados caso a busca do Supabase funcione
