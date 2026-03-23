@@ -626,6 +626,7 @@
                     if (kanbanBoard) kanbanBoard.classList.remove('hidden');
                     if (relatoriosView) relatoriosView.classList.add('hidden');
                     if (floatingStats) floatingStats.classList.remove('hidden');
+                    fetchOrders(); // Force reload when returning to Kanban
                 }
                 
                 columns.forEach(col => { col.style.display = 'none'; });
@@ -641,13 +642,13 @@
                     document.getElementById('col-recebido').style.display = 'flex';
                     document.getElementById('col-andamento').style.display = 'flex';
                 }
+                applySearchFilter(); // Apply search filter after column visibility changes
             });
         });
 
         // --- 3.5 Rastreio (Search filter) --- //
-        const searchInput = document.getElementById('search-input');
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
+        function applySearchFilter() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
             
             // Filtro Kanban Cards
             document.querySelectorAll('.card').forEach(card => {
@@ -659,18 +660,22 @@
                 
                 card.style.display = searchData.includes(searchTerm) ? '' : 'none';
             });
-            updateCounters();
 
             // Filtro Relatórios Rows
-            const reportRows = document.querySelectorAll('#relatorios-tbody tr');
+            const reportRows = document.querySelectorAll('#relatorios-table-body tr');
             reportRows.forEach(row => {
-                // Skip loading or empty messages
                 if(row.cells.length < 2) return; 
-                
                 const rowData = row.textContent.toLowerCase();
                 row.style.display = rowData.includes(searchTerm) ? '' : 'none';
             });
-        });
+
+            updateCounters();
+        }
+
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', applySearchFilter);
+        }
 
         // --- 4. Interactive Progress Buttons & Drag-Drop --- //
         function updateCounters() {
@@ -1196,6 +1201,7 @@
                     }
                 });
                 updateCounters();
+                applySearchFilter(); // Re-apply current search if any
             } catch (err) {
                 console.error("Supabase error:", err);
                 alert("Erro ao carregar pedidos do Banco de Dados: " + err.message);
