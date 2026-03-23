@@ -310,12 +310,76 @@
                         </div>
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Data do Pedido</label>
+                        <input type="date" id="np-data" class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Foto Inicial do Pedido <span class="text-[10px] font-normal">(Sem assinaturas)</span></label>
                         <input type="file" id="np-foto" accept="image/*" class="w-full text-sm text-on-surface-variant dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:bg-primary/20 dark:file:bg-gray-700 dark:file:text-white transition-all cursor-pointer">
                     </div>
                     <div class="pt-2">
                         <button type="submit" id="btn-salvar-pedido" class="w-full bg-primary text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
                             <span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- NEW: Editar Pedido Modal -->
+        <div id="modal-editar-pedido" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm modal-overlay"></div>
+            <div class="relative bg-surface dark:bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl p-6 border border-outline-variant/30 dark:border-gray-700">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-headline font-bold text-primary dark:text-white">Editar Pedido</h2>
+                    <button class="close-modal text-on-surface-variant hover:text-primary dark:hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form id="form-editar-pedido" class="space-y-4">
+                    <input type="hidden" id="ep-db-id">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Cód. do Pedido</label>
+                        <input type="text" id="ep-codigo" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all placeholder-gray-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Cliente</label>
+                        <input type="text" id="ep-cliente" list="clients-list" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all placeholder-gray-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Vendedor</label>
+                        <select id="ep-vendedor" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
+                            <option value="">Selecione o vendedor</option>
+                            <option value="Camila">Camila</option>
+                            <option value="Samuel">Samuel</option>
+                            <option value="Bruno">Bruno</option>
+                            <option value="Silvia">Silvia</option>
+                            <option value="Leandro">Leandro</option>
+                            <option value="Outro">Outro...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Data do Pedido</label>
+                        <input type="date" id="ep-data" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700 hover:border-blue-500/50 transition-colors cursor-pointer">
+                            <input type="checkbox" id="ep-entrega" class="w-4 h-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 cursor-pointer">
+                            <label for="ep-entrega" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">
+                                É de Entrega
+                                <span class="material-symbols-outlined text-blue-500 text-[16px] ml-auto">local_shipping</span>
+                            </label>
+                        </div>
+                        <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700 hover:border-error/50 transition-colors cursor-pointer">
+                            <input type="checkbox" id="ep-urgente" class="w-4 h-4 text-tertiary rounded border-gray-300 focus:ring-tertiary dark:border-gray-600 dark:bg-gray-700 cursor-pointer">
+                            <label for="ep-urgente" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">
+                                É Urgente
+                            </label>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit" id="btn-atualizar-pedido" class="w-full bg-primary text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                            <span class="material-symbols-outlined text-[18px]">sync</span> Atualizar Pedido
                         </button>
                     </div>
                 </form>
@@ -792,6 +856,9 @@
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-headline font-extrabold text-primary dark:text-white flex items-center">${order.order_id}${deliveryIcon}</span>
                     <div class="flex items-center gap-1.5">
+                        <button onclick="abrirModalEdicao('${order.id}')" title="Editar Pedido" class="text-on-surface-variant hover:text-primary dark:text-gray-400 dark:hover:text-blue-400 transition-colors flex">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
                         <span class="${priorityClass} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">${order.priority}</span>
                         <button onclick="deletarPedido(this, '${order.id}')" title="Excluir Pedido" class="text-on-surface-variant hover:text-error dark:text-gray-400 dark:hover:text-red-400 transition-colors flex">
                             <span class="material-symbols-outlined text-[16px]">delete</span>
@@ -1055,9 +1122,19 @@
         const npVendedor = document.getElementById('np-vendedor');
 
         // Modal triggers
-        btnNovoPedido.addEventListener('click', () => modalNovoPedido.classList.remove('hidden'));
+        btnNovoPedido.addEventListener('click', () => {
+            modalNovoPedido.classList.remove('hidden');
+            // Set today's date as default
+            document.getElementById('np-data').value = new Date().toLocaleDateString('en-CA');
+        });
+
+        const modalEditarPedido = document.getElementById('modal-editar-pedido');
+
         document.querySelectorAll('.close-modal, .modal-overlay').forEach(el => {
-            el.addEventListener('click', () => modalNovoPedido.classList.add('hidden'));
+            el.addEventListener('click', () => {
+                modalNovoPedido.classList.add('hidden');
+                modalEditarPedido.classList.add('hidden');
+            });
         });
 
         // Urgente glow effect
@@ -1163,6 +1240,7 @@
             const salesperson = document.getElementById('np-vendedor').value;
             const isUrgent = document.getElementById('np-urgente').checked;
             const isDelivery = document.getElementById('np-entrega').checked;
+            const customDate = document.getElementById('np-data').value;
             const photoFile = document.getElementById('np-foto').files[0];
 
             let photoUrl = null;
@@ -1175,7 +1253,8 @@
                 priority: isUrgent ? 'Urgente' : 'Normal',
                 is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
-                start_photo_url: photoUrl
+                start_photo_url: photoUrl,
+                created_at: customDate ? new Date(customDate).toISOString() : new Date().toISOString()
             };
 
             if (supabaseClient) {
@@ -1226,6 +1305,79 @@
             document.getElementById('form-novo-pedido').reset();
             btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
             btn.disabled = false;
+        });
+
+        // --- 5.5 Edit Order Logic --- //
+        async function abrirModalEdicao(dbId) {
+            if (!supabaseClient) return alert("Banco de dados não disponível.");
+            
+            try {
+                const { data: order, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('id', dbId)
+                    .single();
+                
+                if (error) throw error;
+
+                document.getElementById('ep-db-id').value = order.id;
+                document.getElementById('ep-codigo').value = order.order_id || '';
+                document.getElementById('ep-cliente').value = order.client_name || '';
+                document.getElementById('ep-vendedor').value = order.salesperson || '';
+                document.getElementById('ep-entrega').checked = order.is_delivery || false;
+                document.getElementById('ep-urgente').checked = order.priority === 'Urgente';
+                
+                if (order.created_at) {
+                    document.getElementById('ep-data').value = new Date(order.created_at).toLocaleDateString('en-CA');
+                }
+
+                document.getElementById('modal-editar-pedido').classList.remove('hidden');
+            } catch (err) {
+                console.error("Erro ao carregar pedido:", err);
+                alert("Erro ao carregar dados do pedido.");
+            }
+        }
+
+        document.getElementById('form-editar-pedido').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-atualizar-pedido');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Atualizando...';
+            btn.disabled = true;
+
+            const dbId = document.getElementById('ep-db-id').value;
+            const orderId = document.getElementById('ep-codigo').value;
+            const clientName = document.getElementById('ep-cliente').value;
+            const salesperson = document.getElementById('ep-vendedor').value;
+            const isUrgent = document.getElementById('ep-urgente').checked;
+            const isDelivery = document.getElementById('ep-entrega').checked;
+            const customDate = document.getElementById('ep-data').value;
+
+            const updates = {
+                order_id: orderId,
+                client_name: clientName,
+                salesperson: salesperson,
+                priority: isUrgent ? 'Urgente' : 'Normal',
+                is_delivery: isDelivery,
+                created_at: new Date(customDate).toISOString()
+            };
+
+            try {
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update(updates)
+                    .eq('id', dbId);
+                
+                if (error) throw error;
+                
+                alert("Pedido atualizado com sucesso!");
+                location.reload(); 
+            } catch (err) {
+                console.error("Erro ao atualizar:", err);
+                alert("Erro ao salvar alterações: " + err.message);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         });
 
         // --- 6. Final Photo Modal Logic --- //
