@@ -6,7 +6,7 @@ async function run() {
     const query = fs.readFileSync('setup_database.sql', 'utf8');
 
     try {
-        const response = await fetch(`https://api.supabase.com/v1/projects/${ref}/query`, {
+        const response = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,

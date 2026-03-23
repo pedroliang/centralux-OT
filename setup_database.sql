@@ -29,8 +29,17 @@ ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
 -- Criar política permitindo leitura/escrita anônima (Apenas para este protótipo/teste!)
-CREATE POLICY "Permitir acesso total anônimo" ON public.orders
-FOR ALL USING (true) WITH CHECK (true);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'orders' AND policyname = 'Permitir acesso total anônimo'
+    ) THEN
+        CREATE POLICY "Permitir acesso total anônimo" ON public.orders
+        FOR ALL USING (true) WITH CHECK (true);
+    END IF;
+END
+$$;
 
 -- Tabela de Métricas do Dia
 CREATE TABLE IF NOT EXISTS public.hub_metrics (
@@ -43,8 +52,17 @@ CREATE TABLE IF NOT EXISTS public.hub_metrics (
 ALTER TABLE public.hub_metrics ENABLE ROW LEVEL SECURITY;
 
 -- Política de acesso total anônimo (Prototipação)
-CREATE POLICY "Permitir acesso total anônimo" ON public.hub_metrics
-FOR ALL USING (true) WITH CHECK (true);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'hub_metrics' AND policyname = 'Permitir acesso total anônimo'
+    ) THEN
+        CREATE POLICY "Permitir acesso total anônimo" ON public.hub_metrics
+        FOR ALL USING (true) WITH CHECK (true);
+    END IF;
+END
+$$;
 
 -- Inserir os dados iniciais mockados (Igual ao HTML atual)
 INSERT INTO public.orders (order_id, priority, status, progress) VALUES
