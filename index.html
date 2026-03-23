@@ -960,7 +960,7 @@
             }
             
             try {
-                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false }).limit(500);
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: true }).limit(1000);
                 if (error) throw error;
                 
                 if (!data || data.length === 0) {
