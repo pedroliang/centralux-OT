@@ -1095,7 +1095,15 @@
                 // Limpa cartões HTML chumbados caso a busca do Supabase funcione
                 document.querySelectorAll('.kanban-cards').forEach(c => c.innerHTML = '');
 
-                data.forEach(order => {
+                const sortedData = data.sort((a, b) => {
+                    const isAPriority = a.priority === 'Urgente' || a.is_delivery === true;
+                    const isBPriority = b.priority === 'Urgente' || b.is_delivery === true;
+                    if (isAPriority && !isBPriority) return -1;
+                    if (!isAPriority && isBPriority) return 1;
+                    return new Date(b.created_at) - new Date(a.created_at);
+                });
+
+                sortedData.forEach(order => {
                     const card = createCardElement(order);
                     const column = document.getElementById(order.status);
                     const container = column ? column.querySelector('.kanban-cards') : null;
