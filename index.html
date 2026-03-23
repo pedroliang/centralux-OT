@@ -293,7 +293,6 @@
                             <option value="Outro">Outro...</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
                         <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700 hover:border-blue-500/50 transition-colors">
                             <input type="checkbox" id="np-entrega" class="w-4 h-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 cursor-pointer">
                             <label for="np-entrega" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">
@@ -301,20 +300,16 @@
                                 <span class="material-symbols-outlined text-blue-500 text-[16px] ml-auto">local_shipping</span>
                             </label>
                         </div>
-                        <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700 hover:border-error/50 transition-colors">
-                            <input type="checkbox" id="np-urgente" class="w-4 h-4 text-tertiary rounded border-gray-300 focus:ring-tertiary dark:border-gray-600 dark:bg-gray-700 cursor-pointer">
-                            <label for="np-urgente" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">
-                                É Urgente
-                                <span id="np-urgente-glow" class="w-3 h-3 rounded-full bg-error-container border border-error transition-all opacity-30 shadow-none ml-auto"></span>
-                            </label>
+                        <div>
+                            <label class="block text-[10px] font-bold text-on-surface-variant dark:text-gray-400 mb-1">Prioridade</label>
+                            <select id="np-prioridade" class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
+                                <option value="Normal">Normal</option>
+                                <option value="Urgente">Urgente</option>
+                                <option value="Baixo">Baixo</option>
+                                <option value="Trânsito">Trânsito</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-200 dark:border-red-900/50 hover:border-red-500 transition-colors mt-1">
-                        <input type="checkbox" id="np-cancelado" class="w-4 h-4 text-red-600 rounded border-red-300 focus:ring-red-500 dark:border-red-700 dark:bg-gray-700 cursor-pointer">
-                        <label for="np-cancelado" class="text-xs sm:text-sm font-bold text-red-700 dark:text-red-400 flex items-center gap-2 cursor-pointer w-full">
-                            Pedido Cancelado (Não irá para o Kanban)
-                            <span class="material-symbols-outlined text-[16px] ml-auto">cancel</span>
-                        </label>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Data do Pedido</label>
@@ -369,27 +364,21 @@
                         <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Data do Pedido</label>
                         <input type="date" id="ep-data" required class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
                         <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700 hover:border-blue-500/50 transition-colors cursor-pointer">
                             <input type="checkbox" id="ep-entrega" class="w-4 h-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 cursor-pointer">
-                            <label for="ep-entrega" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">
-                                É de Entrega
-                                <span class="material-symbols-outlined text-blue-500 text-[16px] ml-auto">local_shipping</span>
-                            </label>
+                            <label for="ep-entrega" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">É de Entrega</label>
                         </div>
-                        <div class="flex items-center gap-3 bg-surface-container-lowest dark:bg-gray-900 p-3 rounded-lg border border-outline-variant/50 dark:border-gray-700 hover:border-error/50 transition-colors cursor-pointer">
-                            <input type="checkbox" id="ep-urgente" class="w-4 h-4 text-tertiary rounded border-gray-300 focus:ring-tertiary dark:border-gray-600 dark:bg-gray-700 cursor-pointer">
-                            <label for="ep-urgente" class="text-xs sm:text-sm font-bold text-primary dark:text-white flex items-center gap-2 cursor-pointer w-full">
-                                É Urgente
-                            </label>
+                        <div>
+                            <label class="block text-[10px] font-bold text-on-surface-variant dark:text-gray-400 mb-1">Prioridade</label>
+                            <select id="ep-prioridade" class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
+                                <option value="Normal">Normal</option>
+                                <option value="Urgente">Urgente</option>
+                                <option value="Baixo">Baixo</option>
+                                <option value="Trânsito">Trânsito</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-200 dark:border-red-900/50 hover:border-red-500 transition-colors cursor-pointer mt-1">
-                        <input type="checkbox" id="ep-cancelado" class="w-4 h-4 text-red-600 rounded border-red-300 focus:ring-red-500 dark:border-red-700 dark:bg-gray-700 cursor-pointer">
-                        <label for="ep-cancelado" class="text-xs sm:text-sm font-bold text-red-700 dark:text-red-400 flex items-center gap-2 cursor-pointer w-full">
-                            Pedido Cancelado?
-                            <span class="material-symbols-outlined text-[16px] ml-auto">cancel</span>
-                        </label>
                     </div>
                     <div class="pt-2">
                         <button type="submit" id="btn-atualizar-pedido" class="w-full bg-primary text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
@@ -1153,10 +1142,6 @@
         // --- 5. New Order Feature --- //
         const modalNovoPedido = document.getElementById('modal-novo-pedido');
         const btnNovoPedido = document.getElementById('btn-novo-pedido');
-        const npUrgente = document.getElementById('np-urgente');
-        const npUrgenteGlow = document.getElementById('np-urgente-glow');
-        const npVendedor = document.getElementById('np-vendedor');
-
         // Modal triggers
         btnNovoPedido.addEventListener('click', () => {
             modalNovoPedido.classList.remove('hidden');
@@ -1173,19 +1158,7 @@
             });
         });
 
-        // Urgente glow effect
-        npUrgente.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                npUrgenteGlow.classList.remove('opacity-30', 'shadow-none');
-                npUrgenteGlow.classList.add('opacity-100');
-                npUrgenteGlow.style.boxShadow = '0 0 10px #ffdad6, 0 0 20px #93000a';
-            } else {
-                npUrgenteGlow.classList.add('opacity-30', 'shadow-none');
-                npUrgenteGlow.classList.remove('opacity-100');
-                npUrgenteGlow.style.boxShadow = 'none';
-            }
-        });
-
+        const npVendedor = document.getElementById('np-vendedor');
         // Vendedor "Outro..." custom logic
         npVendedor.addEventListener('change', (e) => {
             if (e.target.value === 'Outro') {
@@ -1290,9 +1263,9 @@
             const orderId = document.getElementById('np-codigo').value;
             const clientName = document.getElementById('np-cliente').value;
             const salesperson = document.getElementById('np-vendedor').value;
-            const isUrgent = document.getElementById('np-urgente').checked;
+            const priority = document.getElementById('np-prioridade').value;
             const isDelivery = document.getElementById('np-entrega').checked;
-            const isCancelled = document.getElementById('np-cancelado').checked;
+            const isCancelled = (priority === 'Cancelado');
             const customDate = document.getElementById('np-data').value;
             const photoFile = document.getElementById('np-foto').files[0];
 
@@ -1303,7 +1276,7 @@
                 order_id: orderId,
                 client_name: clientName,
                 salesperson: salesperson,
-                priority: isCancelled ? 'Cancelado' : (isUrgent ? 'Urgente' : 'Normal'),
+                priority: priority,
                 is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
                 start_photo_url: photoUrl,
@@ -1379,8 +1352,7 @@
                 document.getElementById('ep-cliente').value = order.client_name || '';
                 document.getElementById('ep-vendedor').value = order.salesperson || '';
                 document.getElementById('ep-entrega').checked = order.is_delivery || false;
-                document.getElementById('ep-urgente').checked = order.priority === 'Urgente';
-                document.getElementById('ep-cancelado').checked = order.cancelled || false;
+                document.getElementById('ep-prioridade').value = order.priority || 'Normal';
                 
                 if (order.created_at) {
                     document.getElementById('ep-data').value = new Date(order.created_at).toLocaleDateString('en-CA');
@@ -1404,16 +1376,16 @@
             const orderId = document.getElementById('ep-codigo').value;
             const clientName = document.getElementById('ep-cliente').value;
             const salesperson = document.getElementById('ep-vendedor').value;
-            const isUrgent = document.getElementById('ep-urgente').checked;
+            const priority = document.getElementById('ep-prioridade').value;
             const isDelivery = document.getElementById('ep-entrega').checked;
-            const isCancelled = document.getElementById('ep-cancelado').checked;
+            const isCancelled = (priority === 'Cancelado');
             const customDate = document.getElementById('ep-data').value;
 
             const updates = {
                 order_id: orderId,
                 client_name: clientName,
                 salesperson: salesperson,
-                priority: isCancelled ? 'Cancelado' : (isUrgent ? 'Urgente' : 'Normal'),
+                priority: priority,
                 is_delivery: isDelivery,
                 created_at: new Date(customDate).toISOString(),
                 cancelled: isCancelled
