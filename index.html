@@ -321,6 +321,8 @@
                     </table>
                 </div>
             </div>
+            <!-- Hidden input for report photo uploads -->
+            <input type="file" id="report-photo-input" accept="image/*" class="hidden" onchange="handleReportPhotoUpload(event)">
         </div>
 
         <div class="fixed bottom-8 right-8 flex items-center gap-4 z-40" id="floating-stats">
@@ -577,6 +579,8 @@
         const searchInput = document.getElementById('search-input');
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase().trim();
+            
+            // Filtro Kanban Cards
             document.querySelectorAll('.card').forEach(card => {
                 const searchData = [
                     card.textContent.toLowerCase(),
@@ -584,13 +588,19 @@
                     card.dataset.salesperson ? card.dataset.salesperson.toLowerCase() : ''
                 ].join(' ');
                 
-                if (searchData.includes(searchTerm)) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = searchData.includes(searchTerm) ? '' : 'none';
             });
             updateCounters();
+
+            // Filtro Relatórios Rows
+            const reportRows = document.querySelectorAll('#relatorios-tbody tr');
+            reportRows.forEach(row => {
+                // Skip loading or empty messages
+                if(row.cells.length < 2) return; 
+                
+                const rowData = row.textContent.toLowerCase();
+                row.style.display = rowData.includes(searchTerm) ? '' : 'none';
+            });
         });
 
         // --- 4. Interactive Progress Buttons & Drag-Drop --- //
@@ -963,10 +973,47 @@
                     const statusBadge = `<span class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-extrabold shadow-sm ${statusObj.color}">${statusObj.text}</span>`;
                     
                     window.orderPhotosMap[order.id] = { start: order.start_photo_url, end: order.end_photo_url };
-                    let photosHtml = '<div class="flex items-center justify-center gap-1.5">';
-                    if(order.start_photo_url) photosHtml += `<button type="button" onclick="openImagePreview('${order.id}', 'start')" class="w-7 h-7 flex items-center justify-center rounded bg-primary/10 text-primary dark:bg-gray-800 dark:text-blue-400 hover:bg-primary/20 transition-colors" title="Foto Inicial"><span class="material-symbols-outlined text-[16px]">visibility</span></button>`;
-                    if(order.end_photo_url) photosHtml += `<button type="button" onclick="openImagePreview('${order.id}', 'end')" class="w-7 h-7 flex items-center justify-center rounded bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200 transition-colors" title="Foto do Canhoto/Pacote"><span class="material-symbols-outlined text-[16px]">fact_check</span></button>`;
-                    if(!order.start_photo_url && !order.end_photo_url) photosHtml += '<span class="text-[10px] text-gray-400 dark:text-gray-600 italic">Sem foto</span>';
+                    
+                    const btnBase = "w-7 h-7 flex items-center justify-center rounded transition-colors";
+                    
+                    let photosHtml = '<div class="flex items-center justify-center gap-2">';
+                    
+                    // Foto Inicial
+                    if(order.start_photo_url) {
+                        photosHtml += `
+                            <div class="flex flex-col gap-1 items-center">
+                                <div class="flex gap-0.5">
+                                    <button type="button" onclick="openImagePreview('${order.id}', 'start')" class="${btnBase} bg-primary/10 text-primary dark:bg-gray-800 dark:text-blue-400 hover:bg-primary/20" title="Ver Foto Inicial"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+                                    <button type="button" onclick="apagarFotoRelatorio('${order.id}', 'start')" class="${btnBase} bg-error-container/20 text-error hover:bg-error-container/40" title="Apagar Foto Inicial"><span class="material-symbols-outlined text-[16px]">close</span></button>
+                                </div>
+                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Inicial</span>
+                            </div>`;
+                    } else {
+                        photosHtml += `
+                            <div class="flex flex-col gap-1 items-center">
+                                <button type="button" onclick="uploadFotoRelatorio('${order.id}', 'start')" class="${btnBase} border border-dashed border-outline-variant text-on-surface-variant hover:bg-surface-container-highest" title="Adicionar Foto Inicial"><span class="material-symbols-outlined text-[16px]">add_a_photo</span></button>
+                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Inicial</span>
+                            </div>`;
+                    }
+
+                    // Foto Final
+                    if(order.end_photo_url) {
+                        photosHtml += `
+                            <div class="flex flex-col gap-1 items-center">
+                                <div class="flex gap-0.5">
+                                    <button type="button" onclick="openImagePreview('${order.id}', 'end')" class="${btnBase} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200" title="Ver Foto Final"><span class="material-symbols-outlined text-[16px]">fact_check</span></button>
+                                    <button type="button" onclick="apagarFotoRelatorio('${order.id}', 'end')" class="${btnBase} bg-error-container/20 text-error hover:bg-error-container/40" title="Apagar Foto Final"><span class="material-symbols-outlined text-[16px]">close</span></button>
+                                </div>
+                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Final</span>
+                            </div>`;
+                    } else {
+                        photosHtml += `
+                            <div class="flex flex-col gap-1 items-center">
+                                <button type="button" onclick="uploadFotoRelatorio('${order.id}', 'end')" class="${btnBase} border border-dashed border-outline-variant text-on-surface-variant hover:bg-surface-container-highest" title="Adicionar Foto Final"><span class="material-symbols-outlined text-[16px]">add_a_photo</span></button>
+                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Final</span>
+                            </div>`;
+                    }
+                    
                     photosHtml += '</div>';
 
                     tr.innerHTML = `
@@ -1324,6 +1371,66 @@
                 btn.innerHTML = originalContent;
                 btn.disabled = false;
                 event.target.value = '';
+            }
+        }
+
+        // --- Relatórios Photo Management --- //
+        let currentReportOrderId = null;
+        let currentReportPhotoType = null;
+
+        function uploadFotoRelatorio(orderId, type) {
+            currentReportOrderId = orderId;
+            currentReportPhotoType = type;
+            document.getElementById('report-photo-input').click();
+        }
+
+        async function handleReportPhotoUpload(event) {
+            const file = event.target.files[0];
+            if(!file || !currentReportOrderId || !currentReportPhotoType) return;
+            if(!supabaseClient) {
+                alert("Erro: Banco não conectado!");
+                return;
+            }
+
+            try {
+                const photoUrl = await processImageToBase64(file);
+                const colName = currentReportPhotoType === 'start' ? 'start_photo_url' : 'end_photo_url';
+                
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ [colName]: photoUrl })
+                    .eq('id', currentReportOrderId);
+                if(error) throw error;
+                
+                fetchOrders();
+                renderRelatorios();
+                alert("Foto adicionada com sucesso!");
+            } catch(e) {
+                alert("Erro ao adicionar foto: " + e.message);
+            } finally {
+                event.target.value = '';
+                currentReportOrderId = null;
+                currentReportPhotoType = null;
+            }
+        }
+
+        async function apagarFotoRelatorio(orderId, type) {
+            if(!confirm("Tem certeza que deseja apagar esta foto?")) return;
+            if(!supabaseClient) return;
+
+            try {
+                const colName = type === 'start' ? 'start_photo_url' : 'end_photo_url';
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ [colName]: null })
+                    .eq('id', orderId);
+                if(error) throw error;
+                
+                fetchOrders();
+                renderRelatorios();
+                alert("Foto removida!");
+            } catch(e) {
+                alert("Erro ao apagar foto: " + e.message);
             }
         }
 
