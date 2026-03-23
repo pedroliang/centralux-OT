@@ -1171,6 +1171,22 @@
             }
         });
 
+        const epVendedor = document.getElementById('ep-vendedor');
+        epVendedor.addEventListener('change', (e) => {
+            if (e.target.value === 'Outro') {
+                const customName = prompt('Digite o nome do novo vendedor a ser salvo:');
+                if (customName && customName.trim() !== '') {
+                    const opt = document.createElement('option');
+                    opt.value = customName.trim();
+                    opt.textContent = customName.trim();
+                    epVendedor.insertBefore(opt, epVendedor.lastElementChild);
+                    epVendedor.value = opt.value;
+                } else {
+                    epVendedor.value = '';
+                }
+            }
+        });
+
         // Generate distinctive list of clients from DB
         async function fetchClientsAndSalespersons() {
             if (!supabaseClient) return;
