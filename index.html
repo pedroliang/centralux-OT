@@ -38,6 +38,12 @@
 
         #cards-concluido { border: 2px solid #22c55e !important; box-shadow: 0 0 15px rgba(34,197,94,0.4), inset 0 0 5px rgba(34,197,94,0.1) !important; }
         #cards-concluido .card { border: 2px solid #22c55e !important; box-shadow: 0 0 10px rgba(34,197,94,0.3) !important; }
+
+        @keyframes pulse-neon {
+          0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.4), 0 0 10px rgba(239, 68, 68, 0.4); }
+          50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.9), 0 0 30px rgba(239, 68, 68, 0.7); }
+        }
+        .animate-pulse-slow { animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -979,7 +985,7 @@
                     let displayPriority = order.priority;
 
                     if (order.cancelled || order.priority === 'Cancelado') {
-                        priorityClass = "bg-gray-500 text-white dark:bg-gray-600 dark:text-gray-200";
+                        priorityClass = "bg-red-600 text-white dark:bg-red-700 dark:text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.6)] border border-red-400 animate-pulse-slow";
                         displayPriority = 'Cancelado';
                     } else if(order.priority === 'Urgente') {
                         priorityClass = "bg-error-container text-on-error-container border-error dark:bg-red-900/40 dark:text-red-300";
