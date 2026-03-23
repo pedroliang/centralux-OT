@@ -1096,10 +1096,15 @@
                 document.querySelectorAll('.kanban-cards').forEach(c => c.innerHTML = '');
 
                 const sortedData = data.sort((a, b) => {
-                    const isAPriority = a.priority === 'Urgente' || a.is_delivery === true;
-                    const isBPriority = b.priority === 'Urgente' || b.is_delivery === true;
+                    const isAPriority = a.priority === 'Urgente' || !!a.is_delivery;
+                    const isBPriority = b.priority === 'Urgente' || !!b.is_delivery;
                     if (isAPriority && !isBPriority) return -1;
                     if (!isAPriority && isBPriority) return 1;
+                    // Se ambos são prioridade, Urgente ganha de Entrega "Normal"
+                    if (isAPriority && isBPriority) {
+                        if (a.priority === 'Urgente' && b.priority !== 'Urgente') return -1;
+                        if (a.priority !== 'Urgente' && b.priority === 'Urgente') return 1;
+                    }
                     return new Date(b.created_at) - new Date(a.created_at);
                 });
 
