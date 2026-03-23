@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
     route VARCHAR(100),
     delivery_forecast VARCHAR(100),
     is_delivery BOOLEAN DEFAULT FALSE,
-    archived BOOLEAN DEFAULT FALSE
+    archived BOOLEAN DEFAULT FALSE,
+    cancelled BOOLEAN DEFAULT FALSE
 );
 
 -- Adicionar colunas novas se a tabela já existir
@@ -23,7 +24,8 @@ ADD COLUMN IF NOT EXISTS salesperson VARCHAR(100),
 ADD COLUMN IF NOT EXISTS start_photo_url TEXT,
 ADD COLUMN IF NOT EXISTS end_photo_url TEXT,
 ADD COLUMN IF NOT EXISTS is_delivery BOOLEAN DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE;
+ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS cancelled BOOLEAN DEFAULT FALSE;
 
 -- Habilitar RLS (opcional para testes, mas recomendado)
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
