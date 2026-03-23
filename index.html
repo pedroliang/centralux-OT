@@ -1651,6 +1651,69 @@
             }
         }
 
+        // --- 6.0 Suporte para Ctrl+V (Paste) de Imagens --- //
+        window.addEventListener('paste', async (e) => {
+            const items = e.clipboardData.items;
+            let imageBlob = null;
+            
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    imageBlob = items[i].getAsFile();
+                    break;
+                }
+            }
+            
+            if (!imageBlob) return;
+
+            // Identificar contexto ativo
+            const modalNovo = document.getElementById('modal-novo-pedido');
+            const modalFotoFinal = document.getElementById('modal-foto-final');
+            const modalPreview = document.getElementById('image-preview-modal');
+
+            try {
+                if (modalNovo && !modalNovo.classList.contains('hidden')) {
+                    const dt = new DataTransfer();
+                    dt.items.add(imageBlob);
+                    document.getElementById('np-foto').files = dt.files;
+                    alert("📸 Foto colada com sucesso no Novo Pedido!");
+                } 
+                else if (modalFotoFinal && !modalFotoFinal.classList.contains('hidden')) {
+                    const dt = new DataTransfer();
+                    dt.items.add(imageBlob);
+                    document.getElementById('mf-foto').files = dt.files;
+                    alert("📸 Foto colada para Finalizar Pedido!");
+                }
+                else if (modalPreview && !modalPreview.classList.contains('hidden')) {
+                    const editInput = document.getElementById('edit-photo-input');
+                    const dt = new DataTransfer();
+                    dt.items.add(imageBlob);
+                    editInput.files = dt.files;
+                    editInput.dispatchEvent(new Event('change'));
+                    alert("📸 Foto de Preview atualizada!");
+                }
+                else if (window.currentReportOrderId) {
+                    const photoUrl = await processImageToBase64(imageBlob);
+                    const colName = window.currentReportPhotoType === 'start' ? 'start_photo_url' : 'end_photo_url';
+                    
+                    if (!supabaseClient) return;
+
+                    const { error } = await supabaseClient
+                        .from('orders')
+                        .update({ [colName]: photoUrl })
+                        .eq('id', window.currentReportOrderId);
+                    
+                    if (!error) {
+                        alert("📸 Foto colada e enviada para o Relatório! ✅");
+                        renderRelatorios();
+                    } else {
+                        throw error;
+                    }
+                }
+            } catch (err) {
+                console.error("Paste Error:", err);
+            }
+        });
+
     </script>
 </body>
 </html>
