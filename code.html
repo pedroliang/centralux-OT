@@ -290,7 +290,40 @@
             </div>
         </div>
 
-        <div class="fixed bottom-8 right-8 flex items-center gap-4 z-40">
+        <!-- NEW: Relatórios View -->
+        <div id="relatorios-view" class="hidden h-[calc(100vh-140px)] w-full max-w-7xl mx-auto overflow-hidden flex flex-col pt-2 animate-fade-in px-6">
+            <div class="bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-2xl p-6 shadow-sm border border-outline-variant/50 dark:border-gray-700 flex-1 overflow-hidden flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-headline font-bold text-primary dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-tertiary">description</span>
+                        Relatório de Pedidos
+                    </h2>
+                    <button onclick="renderRelatorios()" class="flex items-center gap-2 px-4 py-2 bg-surface-container dark:bg-gray-700 hover:bg-surface-variant dark:hover:bg-gray-600 rounded-lg text-sm font-bold text-primary dark:text-white transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">refresh</span> Atualizar Lista
+                    </button>
+                </div>
+                
+                <div class="overflow-auto flex-1 custom-scrollbar pr-2">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead class="sticky top-0 bg-surface-container-lowest dark:bg-[#1a2b3c] z-10 shadow-sm">
+                            <tr class="border-b border-outline-variant/50 dark:border-gray-700 text-[11px] font-bold text-on-surface-variant dark:text-gray-400 uppercase tracking-wider">
+                                <th class="py-3 px-4">Pedido / Data</th>
+                                <th class="py-3 px-4 text-center">Fotos</th>
+                                <th class="py-3 px-4">Cliente / Vendedor</th>
+                                <th class="py-3 px-4">Prioridade</th>
+                                <th class="py-3 px-4">Status Atual</th>
+                                <th class="py-3 px-4 text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="relatorios-tbody" class="text-sm divide-y divide-outline-variant/30 dark:divide-gray-700">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="fixed bottom-8 right-8 flex items-center gap-4 z-40" id="floating-stats">
             <div class="glass-panel px-6 py-3 rounded-[2rem] shadow-xl border flex items-center gap-8">
                 <div class="flex flex-col items-start min-w-[80px]">
                     <span class="text-[10px] font-bold text-on-surface-variant dark:text-gray-300 uppercase tracking-widest">Entregas</span>
@@ -483,6 +516,22 @@
                 link.classList.remove('text-on-surface-variant');
 
                 const filter = link.getAttribute('data-filter');
+                
+                const kanbanBoard = document.getElementById('kanban-board');
+                const relatoriosView = document.getElementById('relatorios-view');
+                const floatingStats = document.getElementById('floating-stats');
+                
+                if (filter === 'relatorios') {
+                    if (kanbanBoard) kanbanBoard.classList.add('hidden');
+                    if (relatoriosView) relatoriosView.classList.remove('hidden');
+                    if (floatingStats) floatingStats.classList.add('hidden');
+                    renderRelatorios();
+                    return;
+                } else {
+                    if (kanbanBoard) kanbanBoard.classList.remove('hidden');
+                    if (relatoriosView) relatoriosView.classList.add('hidden');
+                    if (floatingStats) floatingStats.classList.remove('hidden');
+                }
                 
                 columns.forEach(col => { col.style.display = 'none'; });
                 
@@ -813,6 +862,103 @@
                 card.style.opacity = '1';
                 document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('bg-surface-dim/20', 'dark:bg-gray-800/60', 'rounded-2xl'));
             });
+        }
+
+        async function deletarPedidoRelatorio(id) {
+            if (!confirm("Tem certeza que deseja apagar este pedido do banco de dados?")) return;
+            if(!supabaseClient) return;
+            const row = document.getElementById('row-' + id);
+            if(row) row.style.opacity = '0.5';
+            
+            try {
+                const { error } = await supabaseClient.from('orders').delete().eq('id', id);
+                if (error) throw error;
+                fetchOrders(); // Kanbans hidden text gets refreshed
+                renderRelatorios();
+            } catch(e) {
+                alert("Erro ao excluir: " + e.message);
+                if(row) row.style.opacity = '1';
+            }
+        }
+
+        async function renderRelatorios() {
+            const tbody = document.getElementById('relatorios-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant"><span class="material-symbols-outlined animate-spin text-3xl">sync</span><div class="mt-2 font-bold">Carregando pedidos do BD...</div></td></tr>';
+            
+            if (!supabaseClient) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-error font-bold">Erro: Banco não conectado.</td></tr>';
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false }).limit(500);
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant font-bold">Nenhum pedido encontrado.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                data.forEach(order => {
+                    const tr = document.createElement('tr');
+                    tr.id = 'row-' + order.id;
+                    tr.className = 'hover:bg-surface-container-highest dark:hover:bg-gray-800/80 transition-colors group';
+                    
+                    let dateStr = '-';
+                    if(order.created_at) {
+                        const d = new Date(order.created_at);
+                        dateStr = d.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}) + ' ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    }
+                    
+                    let priorityClass = "bg-primary-container text-on-primary-container";
+                    if(order.priority === 'Urgente') priorityClass = "bg-error-container text-on-error-container";
+                    else if(order.priority === 'Baixo') priorityClass = "bg-surface-variant text-on-surface-variant";
+                    else if(order.priority === 'Trânsito') priorityClass = "bg-blue-100 text-blue-800";
+                    
+                    let deliveryIcon = order.is_delivery ? `<span class="material-symbols-outlined text-[14px] text-blue-500 ml-1" title="Para Entrega">local_shipping</span>` : '';
+                    
+                    let statusObj = { text: 'Em Processo', color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300' };
+                    if (order.status === 'col-recebido') statusObj = { text: 'Recebido', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300' };
+                    if (order.status === 'col-andamento') statusObj = { text: 'Em Andamento', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400' };
+                    if (order.status === 'col-separado') statusObj = { text: 'Separado/Pronto', color: 'bg-surface-container-high text-on-surface-variant dark:bg-gray-700 dark:text-white' };
+                    if (order.status === 'col-enviado') statusObj = { text: 'Saída: Entrega', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' };
+                    if (order.status === 'col-concluido') statusObj = { text: 'Concluído', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' };
+                    
+                    const statusBadge = `<span class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-extrabold shadow-sm ${statusObj.color}">${statusObj.text}</span>`;
+                    
+                    let photosHtml = '<div class="flex items-center justify-center gap-1.5">';
+                    if(order.start_photo_url) photosHtml += `<a href="${order.start_photo_url}" target="_blank" class="w-7 h-7 flex items-center justify-center rounded bg-primary/10 text-primary dark:bg-gray-800 dark:text-blue-400 hover:bg-primary/20 transition-colors" title="Foto Inicial"><span class="material-symbols-outlined text-[16px]">image</span></a>`;
+                    if(order.end_photo_url) photosHtml += `<a href="${order.end_photo_url}" target="_blank" class="w-7 h-7 flex items-center justify-center rounded bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200 transition-colors" title="Foto do Canhoto/Pacote"><span class="material-symbols-outlined text-[16px]">fact_check</span></a>`;
+                    if(!order.start_photo_url && !order.end_photo_url) photosHtml += '<span class="text-[10px] text-gray-400 dark:text-gray-600 italic">Sem foto</span>';
+                    photosHtml += '</div>';
+
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 w-48 border-r border-outline-variant/10 dark:border-gray-700/50">
+                            <div class="flex items-center font-headline font-extrabold text-primary dark:text-white text-sm">${order.order_id}${deliveryIcon}</div>
+                            <div class="text-[10px] uppercase text-on-surface-variant mt-0.5 tracking-wider font-bold">${dateStr}</div>
+                        </td>
+                        <td class="py-3 px-4 w-24 text-center border-r border-outline-variant/10 dark:border-gray-700/50">${photosHtml}</td>
+                        <td class="py-3 px-4 border-r border-outline-variant/10 dark:border-gray-700/50">
+                            <div class="font-bold text-xs text-primary dark:text-gray-300 truncate max-w-[200px]" title="${order.client_name || '-'}">${order.client_name || '-'}</div>
+                            <div class="text-[10px] text-on-surface-variant truncate max-w-[200px]" title="${order.salesperson || '-'}">Vend: ${order.salesperson || '-'}</div>
+                        </td>
+                        <td class="py-3 px-4 w-24 border-r border-outline-variant/10 dark:border-gray-700/50">
+                            <span class="${priorityClass} text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm block w-fit">${order.priority}</span>
+                        </td>
+                        <td class="py-3 px-4 w-32 border-r border-outline-variant/10 dark:border-gray-700/50">${statusBadge}</td>
+                        <td class="py-3 px-4 text-right w-16">
+                            <button onclick="deletarPedidoRelatorio('${order.id}')" class="text-on-surface-variant hover:text-error dark:text-gray-500 dark:hover:text-red-400 transition-colors p-1.5 opacity-0 group-hover:opacity-100 rounded hover:bg-surface-container-highest dark:hover:bg-gray-700" title="Apagar Pedido Definitivamente">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch(e) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-error font-bold">Erro: ${e.message}</td></tr>`;
+            }
         }
 
         async function fetchOrders() {
