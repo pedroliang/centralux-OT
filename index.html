@@ -1698,6 +1698,7 @@
             const modalNovo = document.getElementById('modal-novo-pedido');
             const modalFotoFinal = document.getElementById('modal-foto-final');
             const modalPreview = document.getElementById('image-preview-modal');
+            const modalReport = document.getElementById('modal-upload-report');
 
             try {
                 if (modalNovo && !modalNovo.classList.contains('hidden')) {
@@ -1720,27 +1721,34 @@
                     editInput.dispatchEvent(new Event('change'));
                     alert("📸 Foto de Preview atualizada!");
                 }
-                else if (window.currentReportOrderId) {
+                else if (modalReport && !modalReport.classList.contains('hidden') && currentReportOrderId) {
+                    // Feedback visual de carregamento
+                    const reportTitle = document.getElementById('mur-title');
+                    const originalTitle = reportTitle.textContent;
+                    reportTitle.innerHTML = '<span class="material-symbols-outlined animate-spin text-primary">sync</span> Enviando...';
+
                     const photoUrl = await processImageToBase64(imageBlob);
-                    const colName = window.currentReportPhotoType === 'start' ? 'start_photo_url' : 'end_photo_url';
+                    const colName = currentReportPhotoType === 'start' ? 'start_photo_url' : 'end_photo_url';
                     
                     if (!supabaseClient) return;
 
                     const { error } = await supabaseClient
                         .from('orders')
                         .update({ [colName]: photoUrl })
-                        .eq('id', window.currentReportOrderId);
+                        .eq('id', currentReportOrderId);
                     
                     if (!error) {
                         alert("📸 Foto colada e enviada para o Relatório! ✅");
                         renderRelatorios();
                         closeReportUploadModal();
                     } else {
+                        reportTitle.textContent = originalTitle;
                         throw error;
                     }
                 }
             } catch (err) {
                 console.error("Paste Error:", err);
+                alert("Erro ao processar imagem colada: " + err.message);
             }
         });
 
