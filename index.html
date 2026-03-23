@@ -987,9 +987,18 @@
                     }
                     
                     let priorityClass = "bg-surface-container-high text-on-surface-variant dark:bg-gray-700 dark:text-gray-300"; // Normal
-                    if(order.priority === 'Urgente') priorityClass = "bg-error-container text-on-error-container border-error dark:bg-red-900/40 dark:text-red-300";
-                    else if(order.priority === 'Baixo') priorityClass = "bg-transparent border border-outline-variant dark:border-gray-600 text-on-surface-variant dark:text-gray-400";
-                    else if(order.priority === 'Trânsito') priorityClass = "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/40 dark:text-blue-300";
+                    let displayPriority = order.priority;
+
+                    if (order.cancelled || order.priority === 'Cancelado') {
+                        priorityClass = "bg-gray-500 text-white dark:bg-gray-600 dark:text-gray-200";
+                        displayPriority = 'Cancelado';
+                    } else if(order.priority === 'Urgente') {
+                        priorityClass = "bg-error-container text-on-error-container border-error dark:bg-red-900/40 dark:text-red-300";
+                    } else if(order.priority === 'Baixo') {
+                        priorityClass = "bg-transparent border border-outline-variant dark:border-gray-600 text-on-surface-variant dark:text-gray-400";
+                    } else if(order.priority === 'Trânsito') {
+                        priorityClass = "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/40 dark:text-blue-300";
+                    }
                     
                     let deliveryIcon = order.is_delivery ? `<span class="material-symbols-outlined text-[14px] text-blue-500 ml-1" title="Para Entrega">local_shipping</span>` : '';
                     
@@ -1057,7 +1066,7 @@
                             <div class="text-[10px] text-on-surface-variant truncate max-w-[200px]" title="${order.salesperson || '-'}">Vend: ${order.salesperson || '-'}</div>
                         </td>
                         <td class="py-3 px-4 w-24 border-r border-outline-variant/10 dark:border-gray-700/50">
-                            <span class="${priorityClass} text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm block w-fit">${order.priority}</span>
+                            <span class="${priorityClass} text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm block w-fit">${displayPriority}</span>
                         </td>
                         <td class="py-3 px-4 w-32 border-r border-outline-variant/10 dark:border-gray-700/50">${statusBadge}</td>
                         <td class="py-3 px-4 text-right w-16">
@@ -1294,7 +1303,7 @@
                 order_id: orderId,
                 client_name: clientName,
                 salesperson: salesperson,
-                priority: isUrgent ? 'Urgente' : 'Normal',
+                priority: isCancelled ? 'Cancelado' : (isUrgent ? 'Urgente' : 'Normal'),
                 is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
                 start_photo_url: photoUrl,
@@ -1404,7 +1413,7 @@
                 order_id: orderId,
                 client_name: clientName,
                 salesperson: salesperson,
-                priority: isUrgent ? 'Urgente' : 'Normal',
+                priority: isCancelled ? 'Cancelado' : (isUrgent ? 'Urgente' : 'Normal'),
                 is_delivery: isDelivery,
                 created_at: new Date(customDate).toISOString(),
                 cancelled: isCancelled
