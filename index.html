@@ -149,37 +149,7 @@
                         <span class="badge-counter bg-primary-container text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 p-3 rounded-xl transition-all" id="cards-recebido">
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9842</span>
-                                <span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">Urgente</span>
-                            </div>
-                            <div class="card-body mb-3">
-                                <div class="flex items-center gap-2 text-on-surface-variant dark:text-gray-300">
-                                    <span class="material-symbols-outlined text-[12px]">schedule</span>
-                                    <span class="text-[10px] font-medium">15 Nov, 2026 14:30</span>
-                                </div>
-                            </div>
-                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
-                                Processar <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                            </button>
-                        </div>
-                        
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9845</span>
-                                <span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">Normal</span>
-                            </div>
-                            <div class="card-body mb-3 text-on-surface-variant dark:text-gray-300">
-                                <div class="flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[12px]">schedule</span>
-                                    <span class="text-[10px] font-medium">15 Nov, 2026 15:10</span>
-                                </div>
-                            </div>
-                            <button onclick="avancarCartao(this, 'col-andamento')" class="w-full py-1.5 bg-surface-container-highest text-primary dark:bg-gray-700 dark:text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-outline-variant transition-colors">
-                                Processar <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                            </button>
-                        </div>
+                        <!-- Cards added dynamically -->
                     </div>
                 </div>
 
@@ -192,16 +162,7 @@
                         <span class="badge-counter bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 p-3 rounded-xl transition-all" id="cards-andamento">
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] border-2 border-tertiary-fixed rounded-xl p-3 shadow-md transition-shadow cursor-move">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9721</span>
-                                <span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">Urgente</span>
-                            </div>
-                            <div class="card-body" style="display: none;"></div>
-                            <button onclick="avancarCartao(this, 'col-separado')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
-                                Embalar <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                            </button>
-                        </div>
+                        <!-- Cards added dynamically -->
                     </div>
                 </div>
 
@@ -214,23 +175,7 @@
                         <span class="badge-counter bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 p-3 rounded-xl transition-all" id="cards-separado">
-                        <div class="card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm border-l-4 border-tertiary transition-shadow cursor-move">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-9550</span>
-                                <span class="bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">Baixo</span>
-                            </div>
-                            <div class="card-body mb-2">
-                                <p class="text-[10px] text-on-surface-variant dark:text-gray-400 italic">Aguardando atribuição de rota...</p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 mt-1 action-grid">
-                                <button onclick="avancarCartao(this, 'col-enviado')" class="py-1.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                                    <span class="material-symbols-outlined text-[13px]">local_shipping</span> Entrega
-                                </button>
-                                <button onclick="avancarCartao(this, 'col-concluido')" class="py-1.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-tertiary-fixed dark:hover:bg-tertiary transition-all">
-                                    <span class="material-symbols-outlined text-[13px]">store</span> Retirada
-                                </button>
-                            </div>
-                        </div>
+                        <!-- Cards added dynamically -->
                     </div>
                 </div>
 
@@ -243,17 +188,7 @@
                         <span class="badge-counter bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 bg-surface-container-low dark:bg-gray-800/10 p-3 rounded-xl transition-all" id="cards-enviado">
-                        <div class="card bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm border-2 border-green-100 dark:border-blue-900 transition-shadow cursor-move">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-white">#Luz-8890</span>
-                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Trânsito</span>
-                            </div>
-                            <div class="card-body mb-2">
-                                <p class="text-[11px] font-bold text-on-surface dark:text-gray-200">Em Trânsito: Rota C-4</p>
-                                <p class="text-[9px] text-on-surface-variant dark:text-gray-400">Previsão: 18:45 Hoje</p>
-                            </div>
-                            <button onclick="avancarCartao(this, 'col-concluido')" class="w-full py-1.5 bg-primary text-white dark:bg-blue-600 dark:hover:bg-blue-500 rounded-lg text-xs font-bold transition-colors">Marcar como Entregue</button>
-                        </div>
+                        <!-- Cards added dynamically -->
                     </div>
                 </div>
 
@@ -263,27 +198,10 @@
                             <span class="w-2 h-2 rounded-full bg-green-500"></span>
                             <h3 class="font-headline font-bold text-primary dark:text-green-400 uppercase text-xs tracking-widest">Concluído</h3>
                         </div>
-                        <span class="badge-counter bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
+                        <span class="badge-counter bg-surface-container-highest dark:bg-gray-700 text-on-surface-variant dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 p-3 rounded-xl transition-all" id="cards-concluido">
-                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-3 grayscale opacity-80 cursor-move transition-all duration-300">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8871</span>
-                                <span class="material-symbols-outlined text-green-600 text-sm">task_alt</span>
-                            </div>
-                            <div class="card-body text-[10px] text-on-surface-variant dark:text-gray-400">
-                                <p>Entregue em 14 de Nov, 2026</p>
-                            </div>
-                        </div>
-                        <div class="card bg-surface-dim/30 dark:bg-gray-800/40 border border-outline-variant dark:border-gray-700 border-dashed rounded-xl p-3 grayscale opacity-80 cursor-move transition-all duration-300">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-headline font-extrabold text-primary dark:text-gray-300">#Luz-8865</span>
-                                <span class="material-symbols-outlined text-green-600 text-sm">task_alt</span>
-                            </div>
-                            <div class="card-body text-[10px] text-on-surface-variant dark:text-gray-400">
-                                <p>Entregue em 14 de Nov, 2026</p>
-                            </div>
-                        </div>
+                        <!-- Cards added dynamically -->
                     </div>
                 </div>
 
@@ -761,7 +679,6 @@
                         
                         // Incrementally add icon to DOM to avoid reloading full board
                         let body = card.querySelector('.card-body');
-                        // if body is hidden (like in concluido), we still add it to DOM
                         if(!body) {
                             body = document.createElement('div');
                             body.className = "card-body mb-3 text-[10px] text-on-surface-variant dark:text-gray-400";
@@ -776,7 +693,17 @@
                         }
                         photoIndicators.innerHTML += `<a href="${photoUrl}" target="_blank" title="Ver Foto Final" class="w-6 h-6 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 hover:bg-green-200 transition-colors pointer-events-auto"><span class="material-symbols-outlined text-[12px]">add_a_photo</span></a>`;
                     }
-                    await supabaseClient.from('orders').update(updateData).eq('id', card.dataset.dbId).catch(console.warn);
+                    
+                    try {
+                        const { error } = await supabaseClient.from('orders').update(updateData).eq('id', card.dataset.dbId);
+                        if(error) throw error;
+                    } catch(err) {
+                        console.error("Erro ao salvar movimento:", err);
+                        alert("ERRO DE CONEXÃO: O movimento não foi salvo no servidor. Por favor, atualize a página.");
+                        card.style.opacity = '1';
+                    }
+                } else if (!card.dataset.dbId) {
+                    console.warn("Card sem ID de banco detectado. O movimento não será persistido.");
                 }
             }, 250);
         }
