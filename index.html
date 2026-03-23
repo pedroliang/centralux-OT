@@ -1164,6 +1164,24 @@
             };
 
             if (supabaseClient) {
+                // Verificar se o pedido já existe (mesmo que arquivado)
+                const { data: existing, error: checkError } = await supabaseClient
+                    .from('orders')
+                    .select('order_id')
+                    .eq('order_id', orderId)
+                    .maybeSingle();
+                
+                if (checkError) {
+                    console.error("Erro ao verificar duplicidade:", checkError);
+                }
+
+                if (existing) {
+                    alert(`O pedido "${orderId}" já foi cadastrado anteriormente (pode estar no Kanban ou nos Relatórios). Por favor, use um código diferente.`);
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
+                    btn.disabled = false;
+                    return;
+                }
+
                 const { data, error } = await supabaseClient.from('orders').insert([newOrder]).select();
                 if (!error && data && data.length > 0) {
                     const card = createCardElement(data[0]);
