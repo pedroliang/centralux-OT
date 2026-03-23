@@ -742,7 +742,18 @@
         // --- Supabase Dynamic Fetch --- //
         function createCardElement(order) {
             const div = document.createElement('div');
-            div.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move";
+            
+            // Destaque para pedidos de HOJE
+            let todayBorder = "";
+            if (order.created_at) {
+                const orderDate = new Date(order.created_at).toLocaleDateString('en-CA'); // YYYY-MM-DD
+                const today = new Date().toLocaleDateString('en-CA');
+                if (orderDate === today) {
+                    todayBorder = "border-[3px] border-red-500/80 dark:border-red-600/60 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+                }
+            }
+
+            div.className = `card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move ${todayBorder}`;
             div.dataset.dbId = order.id;
             div.dataset.clientName = order.client_name || '';
             div.dataset.salesperson = order.salesperson || '';
@@ -976,7 +987,11 @@
                 return;
             }
             try {
-                const { data, error } = await supabaseClient.from('orders').select('*').eq('archived', false);
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('archived', false)
+                    .order('created_at', { ascending: false });
                 if (error) throw error;
                 
                 // Limpa cartões HTML chumbados caso a busca do Supabase funcione
