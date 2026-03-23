@@ -118,6 +118,10 @@
                         <span class="material-symbols-outlined text-[16px]">add</span>
                     </button>
                 </div>
+                <!-- Pan Mode Button -->
+                <button id="pan-mode-btn" class="flex items-center justify-center ml-2 bg-surface-container-lowest dark:bg-gray-800/80 rounded-lg w-10 h-10 border border-outline-variant dark:border-gray-700 text-on-surface-variant hover:text-primary dark:text-gray-400 dark:hover:text-white transition-all active:scale-95 group" title="Ativar Modo Arrastar (Mãozinha)">
+                    <span class="material-symbols-outlined text-[20px] group-[.active]:text-blue-500">back_hand</span>
+                </button>
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-1">
@@ -143,7 +147,7 @@
         </header>
 
         <!-- Kanban Board -->
-        <div class="flex-1 overflow-auto p-6 bg-surface-container dark:bg-gray-800 transition-colors duration-300">
+        <div id="kanban-container" class="flex-1 overflow-auto p-6 bg-surface-container dark:bg-gray-800 transition-colors duration-300 scroll-smooth">
             <div class="flex gap-6 min-h-full h-fit min-w-max pb-32" id="kanban-board">
                 
                 <div class="kanban-column flex flex-col gap-4 animate-fade-in" data-column="recebido" id="col-recebido">
@@ -494,6 +498,58 @@
             currentZoom = 1;
             updateZoom();
         };
+
+        // --- 1.6 Pan Mode (Mãozinha) --- //
+        const panModeBtn = document.getElementById('pan-mode-btn');
+        const kanbanContainer = document.getElementById('kanban-container');
+        let isPanMode = false;
+        let isMouseDown = false;
+        let startX, startY, scrollLeft, scrollTop;
+
+        panModeBtn.addEventListener('click', () => {
+            isPanMode = !isPanMode;
+            panModeBtn.classList.toggle('active', isPanMode);
+            panModeBtn.classList.toggle('bg-blue-50', isPanMode);
+            panModeBtn.classList.toggle('dark:bg-blue-900/20', isPanMode);
+            
+            if (isPanMode) {
+                kanbanContainer.style.cursor = 'grab';
+                kanbanContainer.classList.remove('scroll-smooth'); // Disable smooth scroll for better dragging
+            } else {
+                kanbanContainer.style.cursor = 'default';
+                kanbanContainer.classList.add('scroll-smooth');
+            }
+        });
+
+        kanbanContainer.addEventListener('mousedown', (e) => {
+            if (!isPanMode) return;
+            // Prevent panning if clicking on a card or button
+            if (e.target.closest('.card') || e.target.closest('button')) return;
+            
+            isMouseDown = true;
+            kanbanContainer.style.cursor = 'grabbing';
+            startX = e.pageX - kanbanContainer.offsetLeft;
+            startY = e.pageY - kanbanContainer.offsetTop;
+            scrollLeft = kanbanContainer.scrollLeft;
+            scrollTop = kanbanContainer.scrollTop;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (!isPanMode) return;
+            isMouseDown = false;
+            kanbanContainer.style.cursor = 'grab';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isPanMode || !isMouseDown) return;
+            e.preventDefault();
+            const x = e.pageX - kanbanContainer.offsetLeft;
+            const y = e.pageY - kanbanContainer.offsetTop;
+            const walkX = (x - startX) * 2; // Multiplier for speed
+            const walkY = (y - startY) * 2;
+            kanbanContainer.scrollLeft = scrollLeft - walkX;
+            kanbanContainer.scrollTop = scrollTop - walkY;
+        });
 
 
         // --- 2. Sidebar Collapse/Expand --- //
