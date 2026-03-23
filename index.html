@@ -309,6 +309,13 @@
                             </label>
                         </div>
                     </div>
+                    <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-200 dark:border-red-900/50 hover:border-red-500 transition-colors mt-1">
+                        <input type="checkbox" id="np-cancelado" class="w-4 h-4 text-red-600 rounded border-red-300 focus:ring-red-500 dark:border-red-700 dark:bg-gray-700 cursor-pointer">
+                        <label for="np-cancelado" class="text-xs sm:text-sm font-bold text-red-700 dark:text-red-400 flex items-center gap-2 cursor-pointer w-full">
+                            Pedido Cancelado (Não irá para o Kanban)
+                            <span class="material-symbols-outlined text-[16px] ml-auto">cancel</span>
+                        </label>
+                    </div>
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-400 mb-1">Data do Pedido</label>
                         <input type="date" id="np-data" class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
@@ -376,6 +383,13 @@
                                 É Urgente
                             </label>
                         </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-200 dark:border-red-900/50 hover:border-red-500 transition-colors cursor-pointer mt-1">
+                        <input type="checkbox" id="ep-cancelado" class="w-4 h-4 text-red-600 rounded border-red-300 focus:ring-red-500 dark:border-red-700 dark:bg-gray-700 cursor-pointer">
+                        <label for="ep-cancelado" class="text-xs sm:text-sm font-bold text-red-700 dark:text-red-400 flex items-center gap-2 cursor-pointer w-full">
+                            Pedido Cancelado?
+                            <span class="material-symbols-outlined text-[16px] ml-auto">cancel</span>
+                        </label>
                     </div>
                     <div class="pt-2">
                         <button type="submit" id="btn-atualizar-pedido" class="w-full bg-primary text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
@@ -1063,6 +1077,7 @@
                     .from('orders')
                     .select('*')
                     .eq('archived', false)
+                    .eq('cancelled', false)
                     .order('created_at', { ascending: false });
                 if (error) throw error;
                 
@@ -1261,6 +1276,7 @@
             const salesperson = document.getElementById('np-vendedor').value;
             const isUrgent = document.getElementById('np-urgente').checked;
             const isDelivery = document.getElementById('np-entrega').checked;
+            const isCancelled = document.getElementById('np-cancelado').checked;
             const customDate = document.getElementById('np-data').value;
             const photoFile = document.getElementById('np-foto').files[0];
 
@@ -1275,7 +1291,8 @@
                 is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
                 start_photo_url: photoUrl,
-                created_at: customDate ? new Date(customDate).toISOString() : new Date().toISOString()
+                created_at: customDate ? new Date(customDate).toISOString() : new Date().toISOString(),
+                cancelled: isCancelled
             };
 
             if (supabaseClient) {
@@ -1347,6 +1364,7 @@
                 document.getElementById('ep-vendedor').value = order.salesperson || '';
                 document.getElementById('ep-entrega').checked = order.is_delivery || false;
                 document.getElementById('ep-urgente').checked = order.priority === 'Urgente';
+                document.getElementById('ep-cancelado').checked = order.cancelled || false;
                 
                 if (order.created_at) {
                     document.getElementById('ep-data').value = new Date(order.created_at).toLocaleDateString('en-CA');
@@ -1372,6 +1390,7 @@
             const salesperson = document.getElementById('ep-vendedor').value;
             const isUrgent = document.getElementById('ep-urgente').checked;
             const isDelivery = document.getElementById('ep-entrega').checked;
+            const isCancelled = document.getElementById('ep-cancelado').checked;
             const customDate = document.getElementById('ep-data').value;
 
             const updates = {
@@ -1380,7 +1399,8 @@
                 salesperson: salesperson,
                 priority: isUrgent ? 'Urgente' : 'Normal',
                 is_delivery: isDelivery,
-                created_at: new Date(customDate).toISOString()
+                created_at: new Date(customDate).toISOString(),
+                cancelled: isCancelled
             };
 
             try {
