@@ -159,7 +159,7 @@
                             <span class="w-2 h-2 rounded-full bg-tertiary"></span>
                             <h3 class="font-headline font-bold text-primary dark:text-yellow-400 uppercase text-xs tracking-widest">Em Andamento</h3>
                         </div>
-                        <span class="badge-counter bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
+                        <span class="badge-counter bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 p-3 rounded-xl transition-all" id="cards-andamento">
                         <!-- Cards added dynamically -->
@@ -172,7 +172,7 @@
                             <span class="w-2 h-2 rounded-full bg-secondary"></span>
                             <h3 class="font-headline font-bold text-primary dark:text-gray-300 uppercase text-xs tracking-widest">Separado/Pronto</h3>
                         </div>
-                        <span class="badge-counter bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
+                        <span class="badge-counter bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 p-3 rounded-xl transition-all" id="cards-separado">
                         <!-- Cards added dynamically -->
@@ -185,7 +185,7 @@
                             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                             <h3 class="font-headline font-bold text-primary dark:text-blue-400 uppercase text-xs tracking-widest">Saída: Entrega</h3>
                         </div>
-                        <span class="badge-counter bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
+                        <span class="badge-counter bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                     </div>
                     <div class="kanban-cards h-fit min-h-[150px] space-y-3 bg-surface-container-low dark:bg-gray-800/10 p-3 rounded-xl transition-all" id="cards-enviado">
                         <!-- Cards added dynamically -->
@@ -648,7 +648,13 @@
             if(prog) prog.remove();
 
             // Restaura classes originais caso estivesse em "Concluído"
-            card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-move";
+            // Preserva classes de destaque (como hoje) ao mudar de coluna
+            if (!card.classList.contains('ring-4')) {
+                card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move";
+            } else {
+                // Se já tem o ring-4 (hoje), mantém as classes base + o ring
+                card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move ring-4 ring-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]";
+            }
             
             // Re-exibe corpo do card se estiver oculto
             const cardBody = card.querySelector('.card-body');
@@ -1096,7 +1102,8 @@
                 });
                 updateCounters();
             } catch (err) {
-                console.warn("Supabase schema missing, falling back to static HTML cards:", err.message);
+                console.error("Supabase error:", err);
+                alert("Erro ao carregar pedidos do Banco de Dados: " + err.message);
                 // Attach listeners to hardcoded cards fallback
                 document.querySelectorAll('.card').forEach(card => attachDragListeners(card));
             }
