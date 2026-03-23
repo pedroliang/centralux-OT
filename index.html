@@ -810,10 +810,15 @@
             // Destaque para pedidos de HOJE
             let todayBorder = "";
             if (order.created_at) {
-                const orderDate = new Date(order.created_at).toLocaleDateString('en-CA'); // YYYY-MM-DD
-                const today = new Date().toLocaleDateString('en-CA');
-                if (orderDate === today) {
-                    todayBorder = "border-[3px] border-red-500/80 dark:border-red-600/60 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+                const d = new Date(order.created_at);
+                const now = new Date();
+                const isToday = d.getDate() === now.getDate() && 
+                                d.getMonth() === now.getMonth() && 
+                                d.getFullYear() === now.getFullYear();
+                
+                if (isToday) {
+                    // Usando borda mais grossa e cor sólida para garantir visibilidade
+                    todayBorder = "ring-4 ring-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]";
                 }
             }
 
