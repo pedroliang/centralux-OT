@@ -124,6 +124,13 @@
                 </button>
             </div>
             <div class="flex items-center gap-4">
+                <div id="bulk-actions-kanban" class="hidden flex items-center gap-2 bg-error-container/20 p-1 px-3 rounded-lg border border-error/20">
+                    <span id="selected-count-kanban" class="text-xs font-bold text-error">0 selecionados</span>
+                    <button onclick="deletarSelecionados()" class="flex items-center gap-1 px-2 py-1 bg-error text-white text-[10px] font-bold rounded hover:bg-red-700 transition-colors">
+                        <span class="material-symbols-outlined text-[14px]">delete_sweep</span> Excluir
+                    </button>
+                    <button onclick="clearSelection()" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors">Cancelar</button>
+                </div>
                 <div class="flex items-center gap-1">
                     <button id="theme-toggle" class="p-2 text-on-surface-variant dark:text-gray-300 hover:text-tertiary transition-colors active:scale-95 duration-150">
                         <span class="material-symbols-outlined dark:hidden">dark_mode</span>
@@ -226,15 +233,26 @@
                         <span class="material-symbols-outlined text-tertiary">description</span>
                         Relatório de Pedidos
                     </h2>
-                    <button onclick="renderRelatorios()" class="flex items-center gap-2 px-4 py-2 bg-surface-container dark:bg-gray-700 hover:bg-surface-variant dark:hover:bg-gray-600 rounded-lg text-sm font-bold text-primary dark:text-white transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">refresh</span> Atualizar Lista
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <div id="bulk-actions-relatorios" class="hidden flex items-center gap-2 bg-error-container/20 p-1 px-3 rounded-lg border border-error/20">
+                            <span id="selected-count-relatorios" class="text-xs font-bold text-error">0 selecionados</span>
+                            <button onclick="deletarSelecionados()" class="flex items-center gap-1 px-2 py-1 bg-error text-white text-[10px] font-bold rounded hover:bg-red-700 transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">delete_sweep</span> Excluir
+                            </button>
+                        </div>
+                        <button onclick="renderRelatorios()" class="flex items-center gap-2 px-4 py-2 bg-surface-container dark:bg-gray-700 hover:bg-surface-variant dark:hover:bg-gray-600 rounded-lg text-sm font-bold text-primary dark:text-white transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">refresh</span> Atualizar Lista
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="overflow-auto flex-1 custom-scrollbar pr-2">
                     <table class="w-full text-left border-collapse whitespace-nowrap">
                         <thead class="sticky top-0 bg-surface-container-lowest dark:bg-[#1a2b3c] z-10 shadow-sm">
                             <tr class="border-b border-outline-variant/50 dark:border-gray-700 text-[11px] font-bold text-on-surface-variant dark:text-gray-400 uppercase tracking-wider">
+                                <th class="py-3 px-4 w-10">
+                                    <input type="checkbox" id="select-all-relatorios" onchange="toggleSelectAll(false)" class="w-4 h-4 rounded border-gray-300 dark:border-gray-600">
+                                </th>
                                 <th class="py-3 px-4">Pedido / Data</th>
                                 <th class="py-3 px-4 text-center">Fotos</th>
                                 <th class="py-3 px-4">Cliente / Vendedor</th>
@@ -473,8 +491,89 @@
             console.warn("Supabase Init Error", err);
         }
 
-        // --- 0. Global Photos Map --- //
+        // --- 0. Global Photos Map & Selection --- //
         window.orderPhotosMap = {};
+        window.selectedOrders = new Set();
+
+        function toggleOrderSelection(id) {
+            if (window.selectedOrders.has(id)) {
+                window.selectedOrders.delete(id);
+            } else {
+                window.selectedOrders.add(id);
+            }
+            updateBulkActionsUI();
+        }
+
+        function clearSelection() {
+            window.selectedOrders.clear();
+            document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = false);
+            const masterCb = document.getElementById('select-all-relatorios');
+            if(masterCb) masterCb.checked = false;
+            updateBulkActionsUI();
+        }
+
+        function updateBulkActionsUI() {
+            const count = window.selectedOrders.size;
+            const kanbanBulk = document.getElementById('bulk-actions-kanban');
+            const reportsBulk = document.getElementById('bulk-actions-relatorios');
+            const kanbanCount = document.getElementById('selected-count-kanban');
+            const reportsCount = document.getElementById('selected-count-relatorios');
+
+            if (count > 0) {
+                if(kanbanBulk) kanbanBulk.classList.remove('hidden');
+                if(reportsBulk) reportsBulk.classList.remove('hidden');
+                if(kanbanCount) kanbanCount.textContent = `${count} selecionados`;
+                if(reportsCount) reportsCount.textContent = `${count} selecionados`;
+            } else {
+                if(kanbanBulk) kanbanBulk.classList.add('hidden');
+                if(reportsBulk) reportsBulk.classList.add('hidden');
+            }
+        }
+
+        function toggleSelectAll(isKanban) {
+            const masterCb = isKanban ? null : document.getElementById('select-all-relatorios');
+            const isChecked = masterCb ? masterCb.checked : false;
+            
+            const checkboxes = document.querySelectorAll(isKanban ? '.kanban-cards .order-checkbox' : '#relatorios-tbody .order-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = isChecked;
+                const id = cb.dataset.id;
+                if (isChecked) window.selectedOrders.add(id);
+                else window.selectedOrders.delete(id);
+            });
+            updateBulkActionsUI();
+        }
+
+        async function deletarSelecionados() {
+            const count = window.selectedOrders.size;
+            if (count === 0) return;
+            
+            const isRelatorios = !document.getElementById('relatorios-view').classList.contains('hidden');
+            const msg = isRelatorios ? 
+                `Tem certeza que deseja APAGAR DEFINITIVAMENTE ${count} pedidos do banco de dados?` :
+                `Deseja remover ${count} pedidos do Painel? (Eles continuarão disponíveis nos Relatórios)`;
+            
+            if (!confirm(msg)) return;
+            if (!supabaseClient) return alert("Erro: Banco não conectado.");
+
+            const ids = Array.from(window.selectedOrders);
+            try {
+                if (isRelatorios) {
+                    const { error } = await supabaseClient.from('orders').delete().in('id', ids);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('orders').update({ archived: true }).in('id', ids);
+                    if (error) throw error;
+                }
+                
+                alert(`${count} pedidos processados com sucesso!`);
+                clearSelection();
+                fetchOrders();
+                if(isRelatorios) renderRelatorios();
+            } catch (err) {
+                alert("Erro ao processar exclusão em massa: " + err.message);
+            }
+        }
 
         // --- 1. Dark Mode Toggle --- //
         const themeToggleBtn = document.getElementById('theme-toggle');
@@ -957,7 +1056,10 @@
 
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-headline font-extrabold text-primary dark:text-white flex items-center">${order.order_id}${deliveryIcon}</span>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" data-id="${order.id}" class="order-checkbox w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 cursor-pointer pointer-events-auto" ${window.selectedOrders.has(String(order.id)) ? 'checked' : ''} onchange="toggleOrderSelection('${order.id}')">
+                        <span class="text-xs font-headline font-extrabold text-primary dark:text-white flex items-center">${order.order_id}${deliveryIcon}</span>
+                    </div>
                     <div class="flex items-center gap-1.5">
                         <button onclick="abrirModalEdicao('${order.id}')" title="Editar Pedido" class="text-on-surface-variant hover:text-primary dark:text-gray-400 dark:hover:text-blue-400 transition-colors flex">
                             <span class="material-symbols-outlined text-[16px]">edit</span>
@@ -1134,6 +1236,9 @@
                     photosHtml += '</div>';
 
                     tr.innerHTML = `
+                        <td class="py-3 px-4 w-10 border-r border-outline-variant/10 dark:border-gray-700/50">
+                            <input type="checkbox" data-id="${order.id}" class="order-checkbox w-4 h-4 rounded border-gray-300 dark:border-gray-600 cursor-pointer" ${window.selectedOrders.has(String(order.id)) ? 'checked' : ''} onchange="toggleOrderSelection('${order.id}')">
+                        </td>
                         <td class="py-3 px-4 w-48 border-r border-outline-variant/10 dark:border-gray-700/50">
                             <div class="flex items-center font-headline font-extrabold text-primary dark:text-white text-sm">${order.order_id}${deliveryIcon}</div>
                             <div class="text-[10px] uppercase text-on-surface-variant mt-0.5 tracking-wider font-bold">${dateStr}</div>
