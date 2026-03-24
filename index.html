@@ -719,6 +719,11 @@
                 link.classList.remove('text-on-surface-variant');
 
                 const filter = link.getAttribute('data-filter');
+
+                // Clear search when switching views to prevent "empty board" issue
+                if (searchInput) {
+                    searchInput.value = '';
+                }
                 
                 const kanbanBoard = document.getElementById('kanban-board');
                 const relatoriosView = document.getElementById('relatorios-view');
