@@ -1014,16 +1014,15 @@
             const div = document.createElement('div');
             
             // Destaque para pedidos de HOJE
-            let todayBorder = "";
             if (order.created_at) {
                 const d = new Date(order.created_at);
                 const now = new Date();
+                // Compare using local date parts to be timezone-safe
                 const isToday = d.getDate() === now.getDate() && 
                                 d.getMonth() === now.getMonth() && 
                                 d.getFullYear() === now.getFullYear();
                 
                 if (isToday) {
-                    // Usando borda mais grossa e cor sólida para garantir visibilidade
                     todayBorder = "ring-4 ring-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]";
                 }
             }
@@ -1262,9 +1261,14 @@
                         </td>
                         <td class="py-3 px-4 w-32 border-r border-outline-variant/10 dark:border-gray-700/50">${statusBadge}</td>
                         <td class="py-3 px-4 text-right w-16">
-                            <button onclick="deletarPedidoRelatorio('${order.id}')" class="text-on-surface-variant hover:text-error dark:text-gray-500 dark:hover:text-red-400 transition-colors p-1.5 opacity-0 group-hover:opacity-100 rounded hover:bg-surface-container-highest dark:hover:bg-gray-700" title="Apagar Pedido Definitivamente">
-                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
+                            <div class="flex items-center justify-end gap-1">
+                                <button onclick="abrirModalEdicao('${order.id}')" class="text-on-surface-variant hover:text-primary dark:text-gray-500 dark:hover:text-blue-400 transition-colors p-1.5 opacity-0 group-hover:opacity-100 rounded hover:bg-surface-container-highest dark:hover:bg-gray-700" title="Editar Pedido">
+                                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                                <button onclick="deletarPedidoRelatorio('${order.id}')" class="text-on-surface-variant hover:text-error dark:text-gray-500 dark:hover:text-red-400 transition-colors p-1.5 opacity-0 group-hover:opacity-100 rounded hover:bg-surface-container-highest dark:hover:bg-gray-700" title="Apagar Pedido Definitivamente">
+                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -1573,7 +1577,12 @@
                 document.getElementById('ep-prioridade').value = order.priority || 'Normal';
                 
                 if (order.created_at) {
-                    document.getElementById('ep-data').value = new Date(order.created_at).toLocaleDateString('en-CA');
+                    // Avoid timezone shift when loading into date input
+                    const d = new Date(order.created_at);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    document.getElementById('ep-data').value = `${year}-${month}-${day}`;
                 }
 
                 document.getElementById('modal-editar-pedido').classList.remove('hidden');
