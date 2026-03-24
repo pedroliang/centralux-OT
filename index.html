@@ -662,7 +662,7 @@
             });
 
             // Filtro Relatórios Rows
-            const reportRows = document.querySelectorAll('#relatorios-table-body tr');
+            const reportRows = document.querySelectorAll('#relatorios-tbody tr');
             reportRows.forEach(row => {
                 if(row.cells.length < 2) return; 
                 const rowData = row.textContent.toLowerCase();
@@ -1155,9 +1155,9 @@
                     `;
                     tbody.appendChild(tr);
                 });
-            } catch(e) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-error font-bold">Erro: ${e.message}</td></tr>`;
             }
+            applySearchFilter(); // Maintain filter after rendering
         }
 
         async function fetchOrders() {
