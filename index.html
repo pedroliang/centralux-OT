@@ -491,9 +491,18 @@
             console.warn("Supabase Init Error", err);
         }
 
-        // --- 0. Global Photos Map & Selection --- //
+        // --- 0. Global Photos Map, Selection & Date Helpers --- //
         window.orderPhotosMap = {};
         window.selectedOrders = new Set();
+
+        function getSafeISO(dateStr) {
+            if (!dateStr) return new Date().toISOString();
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const now = new Date();
+            // Create date using local parameters to avoid UTC shift
+            const localDate = new Date(y, m - 1, d, now.getHours(), now.getMinutes(), now.getSeconds());
+            return localDate.toISOString();
+        }
 
         function toggleOrderSelection(id) {
             if (window.selectedOrders.has(id)) {
@@ -1489,7 +1498,7 @@
                 is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
                 start_photo_url: photoUrl,
-                created_at: customDate ? new Date(customDate).toISOString() : new Date().toISOString(),
+                created_at: getSafeISO(customDate),
                 cancelled: isCancelled
             };
 
@@ -1596,7 +1605,7 @@
                 salesperson: salesperson,
                 priority: priority,
                 is_delivery: isDelivery,
-                created_at: new Date(customDate).toISOString(),
+                created_at: getSafeISO(customDate),
                 cancelled: isCancelled
             };
 
