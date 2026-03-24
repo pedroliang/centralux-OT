@@ -1155,6 +1155,7 @@
                     `;
                     tbody.appendChild(tr);
                 });
+            } catch(e) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-error font-bold">Erro: ${e.message}</td></tr>`;
             }
             applySearchFilter(); // Maintain filter after rendering
