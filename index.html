@@ -48,6 +48,16 @@
         /* Dark mode contrast improvements */
         .dark .text-on-surface-variant { color: #a1a1aa !important; } /* gray-400 for better visibility in dark mode */
         .dark .badge-counter { color: #ffffff !important; font-weight: 900 !important; }
+
+        /* Delivery order border highlight - High Specificity */
+        #kanban-board .card.card-delivery {
+          border: 2px solid #2563eb !important;
+          box-shadow: 0 0 10px rgba(37, 99, 235, 0.4) !important;
+        }
+        .dark #kanban-board .card.card-delivery {
+          border: 2px solid #60a5fa !important;
+          box-shadow: 0 0 10px rgba(96, 165, 250, 0.4) !important;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -788,13 +798,11 @@
             if(prog) prog.remove();
 
             // Restaura classes originais caso estivesse em "Concluído"
-            // Preserva classes de destaque (como hoje) ao mudar de coluna
-            if (!card.classList.contains('ring-4')) {
-                card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move";
-            } else {
-                // Se já tem o ring-4 (hoje), mantém as classes base + o ring
-                card.className = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move ring-4 ring-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]";
-            }
+            // Preserva classes de destaque (como hoje e delivery) ao mudar de coluna
+            let baseClasses = "card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move";
+            if (card.classList.contains('ring-4')) baseClasses += " ring-4 ring-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]";
+            if (card.classList.contains('card-delivery')) baseClasses += " card-delivery";
+            card.className = baseClasses;
             
             // Re-exibe corpo do card se estiver oculto
             const cardBody = card.querySelector('.card-body');
@@ -892,7 +900,11 @@
             setTimeout(async () => {
                 atualizarMetricas(sourceColId, targetColId);
                 atualizarAcoesCartao(card, targetColId);
-                targetContainer.appendChild(card);
+                if (card.classList.contains('card-delivery')) {
+                    targetContainer.prepend(card);
+                } else {
+                    targetContainer.appendChild(card);
+                }
                 card.style.opacity = '1';
                 updateCounters();
                 
@@ -983,7 +995,8 @@
                 }
             }
 
-            div.className = `card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move ${todayBorder}`;
+            const deliveryClass = order.is_delivery ? "card-delivery" : "";
+            div.className = `card group bg-surface-container-lowest dark:bg-[#1a2b3c] rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-move ${todayBorder} ${deliveryClass}`;
             div.dataset.dbId = order.id;
             div.dataset.clientName = order.client_name || '';
             div.dataset.salesperson = order.salesperson || '';
@@ -1110,7 +1123,7 @@
             }
             
             try {
-                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: true }).limit(1000);
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false }).limit(1000);
                 if (error) throw error;
                 
                 if (!data || data.length === 0) {
@@ -1253,15 +1266,17 @@
                 document.querySelectorAll('.kanban-cards').forEach(c => c.innerHTML = '');
 
                 const sortedData = data.sort((a, b) => {
-                    const isAPriority = a.priority === 'Urgente' || !!a.is_delivery;
-                    const isBPriority = b.priority === 'Urgente' || !!b.is_delivery;
-                    if (isAPriority && !isBPriority) return -1;
-                    if (!isAPriority && isBPriority) return 1;
-                    // Se ambos são prioridade, Urgente ganha de Entrega "Normal"
-                    if (isAPriority && isBPriority) {
-                        if (a.priority === 'Urgente' && b.priority !== 'Urgente') return -1;
-                        if (a.priority !== 'Urgente' && b.priority === 'Urgente') return 1;
-                    }
+                    // 1. Delivery orders ALWAYS at the beginning
+                    if (!!a.is_delivery && !b.is_delivery) return -1;
+                    if (!a.is_delivery && !!b.is_delivery) return 1;
+
+                    // 2. Urgent orders as second priority
+                    const isAUrgent = a.priority === 'Urgente';
+                    const isBUrgent = b.priority === 'Urgente';
+                    if (isAUrgent && !isBUrgent) return -1;
+                    if (!isAUrgent && isBUrgent) return 1;
+
+                    // 3. Date as final criteria
                     return new Date(b.created_at) - new Date(a.created_at);
                 });
 
@@ -1486,7 +1501,11 @@
                     const card = createCardElement(data[0]);
                     const container = document.getElementById('col-recebido').querySelector('.kanban-cards');
                     atualizarAcoesCartao(card, 'col-recebido');
-                    container.appendChild(card);
+                    if (data[0].is_delivery) {
+                        container.prepend(card);
+                    } else {
+                        container.appendChild(card);
+                    }
                     attachDragListeners(card);
                     updateCounters();
                 } else {
@@ -1501,7 +1520,11 @@
                 const card = createCardElement({...newOrder, id: Date.now()});
                 const container = document.getElementById('col-recebido').querySelector('.kanban-cards');
                 atualizarAcoesCartao(card, 'col-recebido');
-                container.appendChild(card);
+                if (newOrder.is_delivery) {
+                    container.prepend(card);
+                } else {
+                    container.appendChild(card);
+                }
                 attachDragListeners(card);
                 updateCounters();
             }
