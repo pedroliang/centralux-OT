@@ -1,30 +1,30 @@
 # Resumo de Alterações - Centralux OT
 
-Este arquivo resume o trabalho realizado para sincronizar o repositório e corrigir o erro de carregamento de pedidos.
+Este arquivo resume o trabalho realizado para sincronizar o repositório, corrigir erros e implementar melhorias.
 
 ## 1. Sincronização do Repositório
-- **Ação**: O repositório [pedroliang/centralux-OT](https://github.com/pedroliang/centralux-OT) foi clonado para a pasta local:
-  - `C:\Users\pedro\OneDrive\Área de Trabalho\Centralux OT`
-- **Estado**: Pasta sincronizada com a branch `main`.
+- **Ação**: O repositório [pedroliang/centralux-OT](https://github.com/pedroliang/centralux-OT) foi sincronizado e atualizado.
+- **Estado**: Repositório local em conformidade com a branch `main`.
 
 ## 2. Correção de Bug: `todayBorder is not defined`
-- **Problema**: Ao mudar o dia ou carregar pedidos de datas anteriores, o sistema apresentava o erro `ReferenceError: todayBorder is not defined` e não exibia nenhum pedido no Kanban.
-- **Causa**: A variável `todayBorder` era usada para adicionar uma borda vermelha em pedidos de "HOJE", mas não era inicializada se o pedido fosse de uma data diferente.
-- **Solução**:
-  - Arquivo modificado: `index.html`
-  - Função: `createCardElement(order)`
-  - Alteração: Adicionada a inicialização `let todayBorder = "";` no início da função para garantir que a variável sempre exista.
+- **Problema**: O sistema apresentava o erro `ReferenceError: todayBorder is not defined` ao carregar pedidos.
+- **Solução**: Adicionada a inicialização `let todayBorder = "";` na função `createCardElement`.
 
-## 3. Atualização no GitHub
+## 3. Ordenação dos Pedidos (Recente -> Antigo)
+- **Ação**: O sistema agora exibe os pedidos do mais recente para o mais antigo (DESC).
+- **Causa**: Solicitação do usuário para facilitar a visualização de novos pedidos no topo.
+- **Solução**: Alterado o parâmetro de busca no Supabase para `.order('created_at', { ascending: false })`.
+
+## 4. Correção de Erro de Sintaxe (Duplicate `todayBorder`)
+- **Problema**: O painel ficou em branco devido a uma declaração duplicada após o merge.
+- **Solução**: Removida a declaração `let` duplicada, restaurando o funcionamento do site.
+
+## Atualização no GitHub (27/03/2026)
 - **Ações realizadas**:
-  - `git add index.html`
-  - `git commit -m "fix: initialize todayBorder to prevent ReferenceError on day change"`
+  - `git commit -m "Ordenação dos pedidos: do mais recente para o mais antigo"`
+  - `git commit -m "fix: resolve SyntaxError (duplicate todayBorder) causing empty board"`
   - `git push origin main`
-- **Resultado**: O código local e a versão online (GitHub Pages) estão agora estabilizados.
-
-## Próximos Passos Sugeridos
-- Verificar se o contador de métricas está resetando corretamente no novo dia.
-- Testar a funcionalidade de "Finalizar Pedido" para garantir que as fotos estão sendo salvas corretamente no Supabase.
+- **Link**: [Site Online](https://pedroliang.github.io/centralux-OT/)
 
 ---
-*Resumo gerado em 26/03/2026*
+*Resumo atualizado em 27/03/2026*
