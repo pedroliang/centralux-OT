@@ -58,6 +58,82 @@
           border: 2px solid #60a5fa !important;
           box-shadow: 0 0 10px rgba(96, 165, 250, 0.4) !important;
         }
+
+        /* Crop overlay styles */
+        #crop-overlay {
+          position: absolute;
+          inset: 0;
+          cursor: crosshair;
+          z-index: 10;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+        #crop-overlay.hidden { display: none; }
+        .crop-dim {
+          position: absolute;
+          background: rgba(0,0,0,0.55);
+          pointer-events: none;
+          transition: none;
+        }
+        .crop-selection {
+          position: absolute;
+          border: 2px solid #fff;
+          box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+          pointer-events: none;
+        }
+        .crop-selection::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border: 1px dashed rgba(255,255,255,0.5);
+        }
+        /* Grid lines inside crop */
+        .crop-grid {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        .crop-grid::before,
+        .crop-grid::after {
+          content: '';
+          position: absolute;
+          background: rgba(255,255,255,0.25);
+        }
+        .crop-grid::before {
+          top: 33.33%; left: 0; right: 0; height: 1px;
+          box-shadow: 0 calc(33.33cqh) 0 rgba(255,255,255,0.25);
+        }
+        .crop-grid::after {
+          left: 33.33%; top: 0; bottom: 0; width: 1px;
+          box-shadow: calc(33.33cqw) 0 0 rgba(255,255,255,0.25);
+        }
+        .crop-handle {
+          position: absolute;
+          width: 18px; height: 18px;
+          background: #fff;
+          border: 2px solid #041627;
+          border-radius: 3px;
+          pointer-events: none;
+          z-index: 2;
+        }
+        .crop-handle.tl { top: -9px; left: -9px; }
+        .crop-handle.tr { top: -9px; right: -9px; }
+        .crop-handle.bl { bottom: -9px; left: -9px; }
+        .crop-handle.br { bottom: -9px; right: -9px; }
+        .crop-size-info {
+          position: absolute;
+          bottom: -28px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0,0,0,0.7);
+          color: #fff;
+          font-size: 10px;
+          font-family: monospace;
+          padding: 2px 8px;
+          border-radius: 4px;
+          white-space: nowrap;
+          pointer-events: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -514,7 +590,7 @@
             </div>
 
             <!-- Live video / captured preview -->
-            <div class="relative bg-black" style="aspect-ratio:16/9">
+            <div id="webcam-viewport" class="relative bg-black" style="aspect-ratio:16/9">
                 <!-- Live feed -->
                 <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 <!-- Captured still -->
@@ -538,6 +614,8 @@
                 </div>
                 <!-- Resolution info -->
                 <div id="webcam-res-info" class="absolute bottom-3 right-3 bg-black/60 text-white/70 text-[9px] font-mono px-2 py-0.5 rounded-full"></div>
+                <!-- Crop overlay (appears after capture) -->
+                <div id="crop-overlay" class="hidden"></div>
             </div>
 
             <!-- Controls -->
@@ -563,11 +641,14 @@
                     <button onclick="retakeWebcamPhoto()" class="flex-1 py-2.5 bg-surface-container-high dark:bg-gray-700 text-primary dark:text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-outline-variant/20 transition-all border border-outline-variant/50">
                         <span class="material-symbols-outlined text-[18px]">replay</span> Refazer
                     </button>
+                    <button id="btn-apply-crop" onclick="applyCrop()" class="hidden flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-amber-600 transition-all shadow-md">
+                        <span class="material-symbols-outlined text-[18px]">crop</span> Recortar
+                    </button>
                     <button onclick="acceptWebcamPhoto()" class="flex-1 py-2.5 bg-primary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md">
                         <span class="material-symbols-outlined text-[18px]">check</span> Aceitar Foto
                     </button>
                 </div>
-                <p class="text-center text-[10px] text-on-surface-variant dark:text-gray-500">Enquadre o objeto e clique no botão branco para capturar</p>
+                <p id="webcam-hint-text" class="text-center text-[10px] text-on-surface-variant dark:text-gray-500">Enquadre o objeto e clique no botão branco para capturar</p>
             </div>
         </div>
     </div>
@@ -804,10 +885,21 @@
         });
 
         // --- 3.5 Rastreio (Search filter) --- //
+        let searchTimeout;
         function applySearchFilter() {
             const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
             
-            // Filtro Kanban Cards
+            // Se estiver na aba de relatórios, fazemos a busca no banco de dados (Server-side)
+            const relatoriosView = document.getElementById('relatorios-view');
+            if (relatoriosView && !relatoriosView.classList.contains('hidden')) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    renderRelatorios(searchTerm);
+                }, 400); // Debounce de 400ms
+                return;
+            }
+
+            // Filtro Kanban Cards (Client-side - mantido para velocidade no Kanban)
             document.querySelectorAll('.card').forEach(card => {
                 const searchData = [
                     card.textContent.toLowerCase(),
@@ -816,14 +908,6 @@
                 ].join(' ');
                 
                 card.style.display = searchData.includes(searchTerm) ? '' : 'none';
-            });
-
-            // Filtro Relatórios Rows
-            const reportRows = document.querySelectorAll('#relatorios-tbody tr');
-            reportRows.forEach(row => {
-                if(row.cells.length < 2) return; 
-                const rowData = row.textContent.toLowerCase();
-                row.style.display = rowData.includes(searchTerm) ? '' : 'none';
             });
 
             updateCounters();
@@ -1195,7 +1279,7 @@
             }
         }
 
-        async function renderRelatorios() {
+        async function renderRelatorios(searchTerm = '') {
             const tbody = document.getElementById('relatorios-tbody');
             if(!tbody) return;
             tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant"><span class="material-symbols-outlined animate-spin text-3xl">sync</span><div class="mt-2 font-bold">Carregando pedidos do BD...</div></td></tr>';
@@ -1206,7 +1290,14 @@
             }
             
             try {
-                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false }).limit(1000);
+                let query = supabaseClient.from('orders').select('*');
+                
+                if (searchTerm) {
+                    // Busca por ID do pedido, nome do cliente ou vendedor
+                    query = query.or(`order_id.ilike.%${searchTerm}%,client_name.ilike.%${searchTerm}%,salesperson.ilike.%${searchTerm}%`);
+                }
+
+                const { data, error } = await query.order('created_at', { ascending: false }).limit(200);
                 if (error) throw error;
                 
                 if (!data || data.length === 0) {
@@ -1328,7 +1419,6 @@
             } catch(e) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-error font-bold">Erro: ${e.message}</td></tr>`;
             }
-            applySearchFilter(); // Maintain filter after rendering
         }
 
         async function fetchOrders() {
@@ -1342,7 +1432,8 @@
                     .select('*')
                     .eq('archived', false)
                     .eq('cancelled', false)
-                    .order('created_at', { ascending: false });
+                    .order('created_at', { ascending: false })
+                    .limit(100);
                 if (error) throw error;
                 
                 // Limpa cartões HTML chumbados caso a busca do Supabase funcione
@@ -1978,6 +2069,9 @@
             video.style.transform = webcamMirrored ? 'scaleX(-1)' : '';
         }
 
+        // --- Crop state ---
+        let cropState = { active: false, startX: 0, startY: 0, x: 0, y: 0, w: 0, h: 0, dragging: false };
+
         function captureWebcamPhoto() {
             const video = document.getElementById('webcam-video');
             const canvas = document.getElementById('webcam-canvas');
@@ -2007,10 +2101,147 @@
             document.getElementById('webcam-live-controls').classList.add('hidden');
             document.getElementById('webcam-captured-controls').classList.remove('hidden');
 
+            // Show crop overlay and enable crop interaction
+            resetCropState();
+            const cropOverlay = document.getElementById('crop-overlay');
+            cropOverlay.classList.remove('hidden');
+            cropOverlay.innerHTML = ''; // clear previous selection
+            document.getElementById('webcam-hint-text').textContent = 'Arraste na imagem para selecionar a área de recorte, ou clique em "Aceitar Foto" para usar a foto inteira';
+
             // Save blob at max quality
             canvas.toBlob(blob => {
                 webcamCapturedBlob = blob;
             }, 'image/jpeg', 0.97);
+        }
+
+        function resetCropState() {
+            cropState = { active: false, startX: 0, startY: 0, x: 0, y: 0, w: 0, h: 0, dragging: false };
+            const btnCrop = document.getElementById('btn-apply-crop');
+            if (btnCrop) btnCrop.classList.add('hidden');
+        }
+
+        // Crop overlay mouse/touch handlers
+        (function initCropHandlers() {
+            const overlay = document.getElementById('crop-overlay');
+            if (!overlay) return;
+
+            function getPos(e) {
+                const rect = overlay.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: Math.max(0, Math.min(clientX - rect.left, rect.width)),
+                    y: Math.max(0, Math.min(clientY - rect.top, rect.height))
+                };
+            }
+
+            function onStart(e) {
+                e.preventDefault();
+                const pos = getPos(e);
+                cropState.dragging = true;
+                cropState.startX = pos.x;
+                cropState.startY = pos.y;
+                cropState.active = false;
+                overlay.innerHTML = ''; // clear old selection
+                document.getElementById('btn-apply-crop').classList.add('hidden');
+            }
+
+            function onMove(e) {
+                if (!cropState.dragging) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                const rect = overlay.getBoundingClientRect();
+
+                const x = Math.min(cropState.startX, pos.x);
+                const y = Math.min(cropState.startY, pos.y);
+                const w = Math.abs(pos.x - cropState.startX);
+                const h = Math.abs(pos.y - cropState.startY);
+
+                cropState.x = x;
+                cropState.y = y;
+                cropState.w = w;
+                cropState.h = h;
+
+                // Show selection rectangle with corner handles
+                if (w > 5 && h > 5) {
+                    cropState.active = true;
+                    // Calculate crop dimensions in original image pixels
+                    const canvas = document.getElementById('webcam-canvas');
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    const cropW = Math.round(w * scaleX);
+                    const cropH = Math.round(h * scaleY);
+
+                    overlay.innerHTML = `
+                        <div class="crop-selection" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);">
+                            <div class="crop-handle tl"></div>
+                            <div class="crop-handle tr"></div>
+                            <div class="crop-handle bl"></div>
+                            <div class="crop-handle br"></div>
+                            <div class="crop-size-info">${cropW} × ${cropH}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            function onEnd(e) {
+                if (!cropState.dragging) return;
+                cropState.dragging = false;
+                if (cropState.active && cropState.w > 10 && cropState.h > 10) {
+                    document.getElementById('btn-apply-crop').classList.remove('hidden');
+                }
+            }
+
+            overlay.addEventListener('mousedown', onStart);
+            overlay.addEventListener('mousemove', onMove);
+            overlay.addEventListener('mouseup', onEnd);
+            overlay.addEventListener('mouseleave', onEnd);
+            overlay.addEventListener('touchstart', onStart, { passive: false });
+            overlay.addEventListener('touchmove', onMove, { passive: false });
+            overlay.addEventListener('touchend', onEnd);
+        })();
+
+        function applyCrop() {
+            if (!cropState.active) return;
+
+            const overlay = document.getElementById('crop-overlay');
+            const canvas = document.getElementById('webcam-canvas');
+            const rect = overlay.getBoundingClientRect();
+
+            // Scale from display coordinates to canvas (native) coordinates
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const sx = Math.round(cropState.x * scaleX);
+            const sy = Math.round(cropState.y * scaleY);
+            const sw = Math.round(cropState.w * scaleX);
+            const sh = Math.round(cropState.h * scaleY);
+
+            // Extract the cropped region
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(sx, sy, sw, sh);
+
+            // Resize canvas to cropped dimensions
+            canvas.width = sw;
+            canvas.height = sh;
+            ctx.putImageData(imageData, 0, 0);
+
+            // Update resolution info
+            document.getElementById('webcam-res-info').textContent = `${sw}×${sh}`;
+
+            // Update blob
+            canvas.toBlob(blob => {
+                webcamCapturedBlob = blob;
+            }, 'image/jpeg', 0.97);
+
+            // Hide crop overlay and reset
+            overlay.classList.add('hidden');
+            overlay.innerHTML = '';
+            resetCropState();
+
+            // Update badge to show cropped status
+            document.getElementById('webcam-captured-badge').innerHTML = '<span class="material-symbols-outlined text-[12px]">crop</span> RECORTADA';
+            document.getElementById('webcam-hint-text').textContent = 'Foto recortada com sucesso! Clique em "Aceitar Foto" para confirmar';
         }
 
         function retakeWebcamPhoto() {
@@ -2018,14 +2249,22 @@
             const canvas = document.getElementById('webcam-canvas');
             webcamCapturedBlob = null;
 
+            // Hide crop overlay
+            const cropOverlay = document.getElementById('crop-overlay');
+            cropOverlay.classList.add('hidden');
+            cropOverlay.innerHTML = '';
+            resetCropState();
+
             // Back to live
             canvas.classList.add('hidden');
             video.classList.remove('hidden');
             document.getElementById('webcam-crosshair').classList.remove('hidden');
             document.getElementById('webcam-live-badge').classList.remove('hidden');
             document.getElementById('webcam-captured-badge').classList.add('hidden');
+            document.getElementById('webcam-captured-badge').innerHTML = '<span class="material-symbols-outlined text-[12px]">check_circle</span> CAPTURADA';
             document.getElementById('webcam-live-controls').classList.remove('hidden');
             document.getElementById('webcam-captured-controls').classList.add('hidden');
+            document.getElementById('webcam-hint-text').textContent = 'Enquadre o objeto e clique no botão branco para capturar';
         }
 
         async function acceptWebcamPhoto() {
@@ -2078,10 +2317,23 @@
                 webcamStream = null;
             }
             webcamCapturedBlob = null;
+
+            // Cleanup crop state
+            const cropOverlay = document.getElementById('crop-overlay');
+            if (cropOverlay) {
+                cropOverlay.classList.add('hidden');
+                cropOverlay.innerHTML = '';
+            }
+            resetCropState();
+
             document.getElementById('modal-webcam').classList.add('hidden');
             // Reset video element
             const video = document.getElementById('webcam-video');
             video.srcObject = null;
+            // Reset hint text
+            document.getElementById('webcam-hint-text').textContent = 'Enquadre o objeto e clique no botão branco para capturar';
+            // Reset badge
+            document.getElementById('webcam-captured-badge').innerHTML = '<span class="material-symbols-outlined text-[12px]">check_circle</span> CAPTURADA';
         }
 
         // --- 6.0 Suporte para Ctrl+V (Paste) de Imagens --- //
