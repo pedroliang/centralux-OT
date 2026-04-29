@@ -300,6 +300,7 @@
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-green-500"></span>
                             <h3 class="font-headline font-bold text-primary dark:text-green-400 uppercase text-xs tracking-widest">Concluído</h3>
+                            <input type="checkbox" id="select-all-concluido" onchange="toggleSelectAllConcluido()" class="w-3.5 h-3.5 ml-1 rounded border-gray-300 dark:border-gray-600 cursor-pointer" title="Selecionar todos os concluídos">
                         </div>
                         <span class="badge-counter bg-green-500 text-white text-[12px] font-black px-2.5 py-0.5 rounded-full shadow-lg">0</span>
                     </div>
@@ -694,6 +695,8 @@
             document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = false);
             const masterCb = document.getElementById('select-all-relatorios');
             if(masterCb) masterCb.checked = false;
+            const masterCbConcluido = document.getElementById('select-all-concluido');
+            if(masterCbConcluido) masterCbConcluido.checked = false;
             updateBulkActionsUI();
         }
 
@@ -725,6 +728,25 @@
                 const id = cb.dataset.id;
                 if (isChecked) window.selectedOrders.add(id);
                 else window.selectedOrders.delete(id);
+            });
+            updateBulkActionsUI();
+        }
+
+        function toggleSelectAllConcluido() {
+            const masterCb = document.getElementById('select-all-concluido');
+            const isChecked = masterCb.checked;
+            
+            const cards = document.querySelectorAll('#cards-concluido .card');
+            cards.forEach(card => {
+                if (card.style.display !== 'none') {
+                    const cb = card.querySelector('.order-checkbox');
+                    if (cb) {
+                        cb.checked = isChecked;
+                        const id = cb.dataset.id;
+                        if (isChecked) window.selectedOrders.add(id);
+                        else window.selectedOrders.delete(id);
+                    }
+                }
             });
             updateBulkActionsUI();
         }
