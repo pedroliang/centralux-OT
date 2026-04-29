@@ -432,7 +432,7 @@
                         <input type="date" id="np-data" class="w-full bg-surface-container-lowest dark:bg-gray-900 border border-outline-variant dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-primary dark:text-white focus:ring-2 focus:ring-tertiary outline-none transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-300 mb-1">Foto Inicial do Pedido <span class="text-[10px] font-normal">(Sem assinaturas)</span></label>
+                        <label class="block text-xs font-bold text-on-surface-variant dark:text-gray-300 mb-1">Foto do Pedido <span class="text-[10px] font-normal">(Comprovante/Nota)</span></label>
                         <input type="file" id="np-foto" accept="image/*" class="w-full text-sm text-on-surface-variant dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:bg-primary/20 dark:file:bg-gray-700 dark:file:text-white transition-all cursor-pointer">
                         <button type="button" onclick="openWebcam('novo-pedido')" class="mt-2 w-full py-2 bg-primary/10 dark:bg-blue-900/20 text-primary dark:text-blue-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-primary/20 transition-all border border-primary/20">
                             <span class="material-symbols-outlined text-[16px]">photo_camera</span> Usar Câmera
@@ -1210,11 +1210,9 @@
 
             // Se tiver fotos atreladas
             let photoIndicators = '';
-            if (order.start_photo_url || order.end_photo_url) {
-                window.orderPhotosMap[order.id] = { start: order.start_photo_url, end: order.end_photo_url };
+            if (order.has_end_photo || order.end_photo_url) {
                 photoIndicators = `<div class="photo-indicators flex gap-1 mt-2">`;
-                if(order.start_photo_url) photoIndicators += `<button type="button" onclick="openImagePreview('${order.id}', 'start')" title="Ver Foto Inicial" class="w-6 h-6 rounded bg-primary/10 dark:bg-gray-700 flex items-center justify-center text-primary dark:text-blue-400 hover:bg-primary/20 transition-colors cursor-pointer pointer-events-auto"><span class="material-symbols-outlined text-[14px]">visibility</span></button>`;
-                if(order.end_photo_url) photoIndicators += `<button type="button" onclick="openImagePreview('${order.id}', 'end')" title="Ver Foto Final" class="w-6 h-6 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 hover:bg-green-200 transition-colors cursor-pointer pointer-events-auto"><span class="material-symbols-outlined text-[14px]">fact_check</span></button>`;
+                photoIndicators += `<button type="button" onclick="openImagePreview('${order.id}', 'end')" title="Ver Foto do Pedido" class="w-6 h-6 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 hover:bg-green-200 transition-colors cursor-pointer pointer-events-auto"><span class="material-symbols-outlined text-[14px]">fact_check</span></button>`;
                 photoIndicators += `</div>`;
             }
 
@@ -1312,7 +1310,7 @@
             }
             
             try {
-                let query = supabaseClient.from('orders').select('*');
+                let query = supabaseClient.from('orders').select('id, order_id, client_name, salesperson, priority, status, cancelled, is_delivery, created_at, delivery_forecast, route');
                 
                 if (searchTerm) {
                     // Busca por ID do pedido, nome do cliente ou vendedor
@@ -1321,6 +1319,15 @@
 
                 const { data, error } = await query.order('created_at', { ascending: false }).limit(200);
                 if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const orderIds = data.map(o => o.id);
+                    const { data: endData } = await supabaseClient.from('orders').select('id').not('end_photo_url', 'is', null).neq('end_photo_url', '').in('id', orderIds);
+                    const endIds = new Set((endData || []).map(d => d.id));
+                    data.forEach(o => {
+                        o.has_end_photo = endIds.has(o.id);
+                    });
+                }
                 
                 if (!data || data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant font-bold">Nenhum pedido encontrado.</td></tr>';
@@ -1364,48 +1371,27 @@
                     
                     const statusBadge = `<span class="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-extrabold shadow-sm ${statusObj.color}">${statusObj.text}</span>`;
                     
-                    window.orderPhotosMap[order.id] = { start: order.start_photo_url, end: order.end_photo_url };
-                    
                     const btnBase = "w-7 h-7 flex items-center justify-center rounded transition-colors";
                     
                     let photosHtml = '<div class="flex items-center justify-center gap-2">';
                     
-                    // Foto Inicial
-                    if(order.start_photo_url) {
+                    // Foto Única (Final)
+                    if(order.has_end_photo || order.end_photo_url) {
                         photosHtml += `
                             <div class="flex flex-col gap-1 items-center">
                                 <div class="flex gap-0.5">
-                                    <button type="button" onclick="openImagePreview('${order.id}', 'start')" class="${btnBase} bg-primary/10 text-primary dark:bg-gray-800 dark:text-blue-400 hover:bg-primary/20" title="Ver Foto Inicial"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
-                                    <button type="button" onclick="apagarFotoRelatorio('${order.id}', 'start')" class="${btnBase} bg-error-container/20 text-error hover:bg-error-container/40" title="Apagar Foto Inicial"><span class="material-symbols-outlined text-[16px]">close</span></button>
+                                    <button type="button" onclick="openImagePreview('${order.id}', 'end')" class="${btnBase} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200" title="Ver Foto do Pedido"><span class="material-symbols-outlined text-[16px]">fact_check</span></button>
+                                    <button type="button" onclick="apagarFotoRelatorio('${order.id}', 'end')" class="${btnBase} bg-error-container/20 text-error hover:bg-error-container/40" title="Apagar Foto"><span class="material-symbols-outlined text-[16px]">close</span></button>
                                 </div>
-                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Inicial</span>
+                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Foto</span>
                             </div>`;
                     } else {
                         photosHtml += `
                             <div class="flex flex-col gap-1 items-center">
-                                <button type="button" onclick="uploadFotoRelatorio('${order.id}', 'start')" class="${btnBase} border border-dashed border-outline-variant text-on-surface-variant hover:bg-surface-container-highest" title="Adicionar Foto Inicial"><span class="material-symbols-outlined text-[16px]">add_a_photo</span></button>
-                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Inicial</span>
+                                <button type="button" onclick="uploadFotoRelatorio('${order.id}', 'end')" class="${btnBase} border border-dashed border-outline-variant text-on-surface-variant hover:bg-surface-container-highest" title="Adicionar Foto"><span class="material-symbols-outlined text-[16px]">add_a_photo</span></button>
+                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Foto</span>
                             </div>`;
                     }
-
-                    // Foto Final
-                    if(order.end_photo_url) {
-                        photosHtml += `
-                            <div class="flex flex-col gap-1 items-center">
-                                <div class="flex gap-0.5">
-                                    <button type="button" onclick="openImagePreview('${order.id}', 'end')" class="${btnBase} bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 hover:bg-green-200" title="Ver Foto Final"><span class="material-symbols-outlined text-[16px]">fact_check</span></button>
-                                    <button type="button" onclick="apagarFotoRelatorio('${order.id}', 'end')" class="${btnBase} bg-error-container/20 text-error hover:bg-error-container/40" title="Apagar Foto Final"><span class="material-symbols-outlined text-[16px]">close</span></button>
-                                </div>
-                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Final</span>
-                            </div>`;
-                    } else {
-                        photosHtml += `
-                            <div class="flex flex-col gap-1 items-center">
-                                <button type="button" onclick="uploadFotoRelatorio('${order.id}', 'end')" class="${btnBase} border border-dashed border-outline-variant text-on-surface-variant hover:bg-surface-container-highest" title="Adicionar Foto Final"><span class="material-symbols-outlined text-[16px]">add_a_photo</span></button>
-                                <span class="text-[8px] uppercase font-bold text-on-surface-variant opacity-60">Final</span>
-                            </div>`;
-                    }
-                    
                     photosHtml += '</div>';
 
                     tr.innerHTML = `
@@ -1451,13 +1437,22 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('orders')
-                    .select('*')
+                    .select('id, order_id, client_name, salesperson, priority, status, cancelled, is_delivery, created_at, delivery_forecast, route')
                     .eq('archived', false)
                     .eq('cancelled', false)
                     .order('created_at', { ascending: false })
                     .limit(100);
                 if (error) throw error;
                 
+                if (data && data.length > 0) {
+                    const orderIds = data.map(o => o.id);
+                    const { data: endData } = await supabaseClient.from('orders').select('id').not('end_photo_url', 'is', null).neq('end_photo_url', '').in('id', orderIds);
+                    const endIds = new Set((endData || []).map(d => d.id));
+                    data.forEach(o => {
+                        o.has_end_photo = endIds.has(o.id);
+                    });
+                }
+
                 // Limpa cartões HTML chumbados caso a busca do Supabase funcione
                 document.querySelectorAll('.kanban-cards').forEach(c => c.innerHTML = '');
 
@@ -1668,7 +1663,7 @@
                 priority: priority,
                 is_delivery: isDelivery,
                 status: 'col-recebido', // Recebido is the default column
-                start_photo_url: photoUrl,
+                end_photo_url: photoUrl,
                 created_at: getSafeISO(customDate),
                 cancelled: isCancelled
             };
@@ -1694,6 +1689,10 @@
 
                 const { data, error } = await supabaseClient.from('orders').insert([newOrder]).select();
                 if (!error && data && data.length > 0) {
+                    if (photoUrl) {
+                        if (!window.orderPhotosMap) window.orderPhotosMap = {};
+                        window.orderPhotosMap[data[0].id] = { end: photoUrl };
+                    }
                     const card = createCardElement(data[0]);
                     const container = document.getElementById('col-recebido').querySelector('.kanban-cards');
                     atualizarAcoesCartao(card, 'col-recebido');
@@ -1856,15 +1855,38 @@
         let currentPreviewOrderId = null;
         let currentPreviewPhotoType = null;
 
-        function openImagePreview(orderId, type) {
+        async function openImagePreview(orderId, type) {
             currentPreviewOrderId = orderId;
             currentPreviewPhotoType = type;
-            const url = window.orderPhotosMap[orderId]?.[type];
-            if(!url) return;
             const modal = document.getElementById('image-preview-modal');
             const img = document.getElementById('image-preview-img');
-            img.src = url;
+            
+            // Check cache first (for newly uploaded/edited photos during this session)
+            if (window.orderPhotosMap[orderId] && window.orderPhotosMap[orderId][type]) {
+                img.src = window.orderPhotosMap[orderId][type];
+                modal.classList.remove('hidden');
+                return;
+            }
+
+            img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke="%23cbd5e1" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="40" stroke="%233b82f6" stroke-width="8" fill="none" stroke-dasharray="250" stroke-dashoffset="200"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/></circle></svg>';
             modal.classList.remove('hidden');
+
+            try {
+                const colName = type === 'start' ? 'start_photo_url' : 'end_photo_url';
+                const { data, error } = await supabaseClient.from('orders').select(colName).eq('id', orderId).single();
+                if (error) throw error;
+                if (data && data[colName]) {
+                    if (!window.orderPhotosMap[orderId]) window.orderPhotosMap[orderId] = {};
+                    window.orderPhotosMap[orderId][type] = data[colName];
+                    img.src = data[colName];
+                } else {
+                    alert("Foto não encontrada no banco de dados.");
+                    closeImagePreview();
+                }
+            } catch (err) {
+                alert("Erro ao buscar foto: " + err.message);
+                closeImagePreview();
+            }
         }
 
         function closeImagePreview() {
@@ -1977,6 +1999,10 @@
                     .eq('id', orderId);
                 if(error) throw error;
                 
+                if (window.orderPhotosMap[orderId]) {
+                    window.orderPhotosMap[orderId][type] = null;
+                }
+                
                 fetchOrders();
                 renderRelatorios();
                 alert("Foto removida!");
@@ -2013,7 +2039,7 @@
 
             // Set title based on context
             const titles = {
-                'novo-pedido': 'Foto Inicial do Pedido',
+                'novo-pedido': 'Foto do Pedido',
                 'foto-final': 'Foto para Finalizar Pedido',
                 'report': 'Foto do Pedido',
                 'edit-preview': 'Substituir Foto'
@@ -2406,7 +2432,7 @@
                     reportTitle.innerHTML = '<span class="material-symbols-outlined animate-spin text-primary">sync</span> Enviando...';
 
                     const photoUrl = await processImageToBase64(imageBlob);
-                    const colName = currentReportPhotoType === 'start' ? 'start_photo_url' : 'end_photo_url';
+                    const colName = 'end_photo_url';
                     
                     if (!supabaseClient) return;
 
