@@ -249,6 +249,7 @@
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-primary dark:bg-blue-400"></span>
                             <h3 class="font-headline font-bold text-primary dark:text-blue-300 uppercase text-xs tracking-widest">Pedido Recebido</h3>
+                            <input type="checkbox" id="select-all-recebido" onchange="toggleSelectAllRecebido()" class="w-3.5 h-3.5 ml-1 rounded border-gray-300 dark:border-gray-600 cursor-pointer" title="Selecionar todos os recebidos">
                         </div>
                         <span class="badge-counter bg-purple-500 text-white text-[12px] font-black px-2.5 py-0.5 rounded-full shadow-lg">0</span>
                     </div>
@@ -770,6 +771,25 @@
             updateBulkActionsUI();
         }
 
+        function toggleSelectAllRecebido() {
+            const masterCb = document.getElementById('select-all-recebido');
+            const isChecked = masterCb.checked;
+            
+            const cards = document.querySelectorAll('#cards-recebido .card');
+            cards.forEach(card => {
+                if (card.style.display !== 'none') {
+                    const cb = card.querySelector('.order-checkbox');
+                    if (cb) {
+                        cb.checked = isChecked;
+                        const id = cb.dataset.id;
+                        if (isChecked) window.selectedOrders.add(id);
+                        else window.selectedOrders.delete(id);
+                    }
+                }
+            });
+            updateBulkActionsUI();
+        }
+
         async function deletarSelecionados() {
             const count = window.selectedOrders.size;
             if (count === 0) return;
@@ -1104,7 +1124,7 @@
             await updateMetricInDb();
         }
 
-        function efetivarMovimento(card, targetColId, sourceColId, photoUrl = null) {
+        function efetivarMovimento(card, targetColId, sourceColId, photoUrl = null, skipBackendUpdate = false) {
             const targetContainer = document.getElementById(targetColId).querySelector('.kanban-cards');
             card.style.opacity = '0.5';
             setTimeout(async () => {
@@ -1118,7 +1138,7 @@
                 card.style.opacity = '1';
                 updateCounters();
                 
-                if (card.dataset.dbId && supabaseClient) {
+                if (!skipBackendUpdate && card.dataset.dbId && supabaseClient) {
                     const updateData = { status: targetColId };
                     if (photoUrl) {
                         updateData.end_photo_url = photoUrl;
@@ -1531,6 +1551,28 @@
                     const sourceColId = draggedCard.closest('.kanban-column').id;
                     const targetContainer = column.querySelector('.kanban-cards');
                     if (targetContainer && sourceColId !== column.id) {
+                        if (window.selectedOrders.has(draggedCard.dataset.dbId) && window.selectedOrders.size > 1) {
+                            const idsToMove = Array.from(window.selectedOrders);
+                            const cardsToMove = Array.from(document.querySelectorAll('.card')).filter(c => idsToMove.includes(c.dataset.dbId));
+                            
+                            if (supabaseClient) {
+                                try {
+                                    await supabaseClient.from('orders').update({ status: column.id }).in('id', idsToMove);
+                                } catch(err) {
+                                    console.error("Erro no bulk update", err);
+                                }
+                            }
+
+                            cardsToMove.forEach(c => {
+                                const sourceCol = c.closest('.kanban-column').id;
+                                efetivarMovimento(c, column.id, sourceCol, null, true);
+                            });
+                            clearSelection();
+                            const saCb = document.getElementById('select-all-recebido');
+                            if (saCb) saCb.checked = false;
+                            return;
+                        }
+
                         solicitarMovimento(draggedCard, column.id, sourceColId);
                     }
                 }
