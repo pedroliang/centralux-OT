@@ -136,6 +136,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body class="bg-surface text-on-surface flex h-screen overflow-hidden dark:bg-gray-900 transition-colors duration-300">
     <!-- Sidebar -->
@@ -1656,6 +1657,62 @@
         }
 
         // Save New Order
+        // --- NEW: Auto-fill logic for Pedido ---
+        document.getElementById('np-codigo').addEventListener('blur', async (e) => {
+            const pedido = e.target.value.trim();
+            if (!pedido) return;
+            
+            try {
+                // Fetch Google Sheet CSV
+                const sheetUrl = 'https://docs.google.com/spreadsheets/d/1fRqUo8vH4awjCwV12U0fhR2bdBSRGFUVMlU8PozUsoQ/export?format=csv&gid=776747946';
+                const response = await fetch(sheetUrl);
+                const csvText = await response.text();
+                
+                Papa.parse(csvText, {
+                    complete: async function(results) {
+                        const rows = results.data;
+                        // Skip header, search for code in column A (index 0)
+                        const match = rows.find(row => row[0] && row[0].toString().trim() === pedido);
+                        
+                        if (match) {
+                            const cliente = match[1] ? match[1].toString().trim() : '';
+                            if (cliente) {
+                                document.getElementById('np-cliente').value = cliente;
+                                
+                                // Fetch Vendedor from Supabase based on Cliente
+                                if (supabaseClient) {
+                                    const { data, error } = await supabaseClient
+                                        .from('orders')
+                                        .select('salesperson')
+                                        .eq('client_name', cliente)
+                                        .not('salesperson', 'is', null)
+                                        .neq('salesperson', '')
+                                        .order('created_at', { ascending: false })
+                                        .limit(1)
+                                        .maybeSingle();
+                                        
+                                    if (data && data.salesperson) {
+                                        const vendedorSelect = document.getElementById('np-vendedor');
+                                        let optionExists = Array.from(vendedorSelect.options).some(opt => opt.value === data.salesperson);
+                                        
+                                        if (!optionExists) {
+                                            const opt = document.createElement('option');
+                                            opt.value = data.salesperson;
+                                            opt.textContent = data.salesperson;
+                                            vendedorSelect.insertBefore(opt, vendedorSelect.lastElementChild); // Insert before "Outro..."
+                                        }
+                                        vendedorSelect.value = data.salesperson;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error("Erro ao buscar dados da planilha:", err);
+            }
+        });
+
         document.getElementById('form-novo-pedido').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-salvar-pedido');
