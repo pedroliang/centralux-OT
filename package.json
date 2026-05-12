@@ -1,4 +1,11 @@
 {
+  "name": "centralux-ot",
+  "version": "1.0.0",
+  "description": "CentraLux Hub de Logística - Sistema de rastreamento de pedidos",
+  "scripts": {
+    "dev": "npx -y serve . -l 3000 --no-clipboard",
+    "start": "npx -y serve . -l 3000 --no-clipboard"
+  },
   "dependencies": {
     "jsdom": "^29.0.1",
     "puppeteer": "^24.40.0"

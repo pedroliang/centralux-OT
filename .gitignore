@@ -2,3 +2,4 @@ node_modules/
 .env
 setup.ps1
 stitch/
+download_fonts.ps1
