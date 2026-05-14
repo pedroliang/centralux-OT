@@ -1761,7 +1761,7 @@
         }
 
         // Image Uploader (Fallback to Base64 to bypass Storage error constraints)
-        function processImageToBase64(file, maxWidth = 2560) {
+        function processImageToBase64(file, maxWidth = 1600) {
             return new Promise((resolve, reject) => {
                 if (!file) {
                     resolve(null);
@@ -1787,8 +1787,8 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // High quality JPEG for best fidelity (reduced to 0.80 to avoid Firestore size limit)
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
+                        // High quality JPEG for best fidelity (width reduced to 1600 to avoid Firestore size limit)
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
                         resolve(dataUrl);
                     };
                     img.onerror = (err) => reject(err);
