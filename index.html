@@ -1787,8 +1787,8 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // High quality JPEG for best fidelity
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                        // High quality JPEG for best fidelity (reduced to 0.80 to avoid Firestore size limit)
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
                         resolve(dataUrl);
                     };
                     img.onerror = (err) => reject(err);
@@ -1917,22 +1917,22 @@
                     return;
                 }
             } else if (db) {
-                // Verificar se o pedido já existe
-                const snapshot = await db.collection('orders')
-                    .where('order_id', '==', orderId)
-                    .get();
-                
-                if (!snapshot.empty) {
-                    alert(`O pedido "${orderId}" já foi cadastrado anteriormente (pode estar no Kanban ou nos Relatórios). Por favor, use um código diferente.`);
-                    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
-                    btn.disabled = false;
-                    return;
-                }
+                try {
+                    // Verificar se o pedido já existe
+                    const snapshot = await db.collection('orders')
+                        .where('order_id', '==', orderId)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        alert(`O pedido "${orderId}" já foi cadastrado anteriormente (pode estar no Kanban ou nos Relatórios). Por favor, use um código diferente.`);
+                        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
+                        btn.disabled = false;
+                        return;
+                    }
 
-                const docRef = await db.collection('orders').add(newOrder);
-                newOrder.id = docRef.id;
-                
-                if (true) { // Simulate success
+                    const docRef = await db.collection('orders').add(newOrder);
+                    newOrder.id = docRef.id;
+                    
                     let savedData = newOrder;
                     if (photoUrl) {
                         if (!window.orderPhotosMap) window.orderPhotosMap = {};
@@ -1948,8 +1948,8 @@
                     }
                     attachDragListeners(card);
                     updateCounters();
-                } else {
-                    console.error("Erro insert:", error);
+                } catch (error) {
+                    console.error("Erro insert Firebase:", error);
                     alert("ERRO AO SALVAR! O Banco de Dados recusou o cadastro. \n\nDetalhe do erro: " + error.message);
                     btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
                     btn.disabled = false;
