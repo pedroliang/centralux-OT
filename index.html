@@ -724,6 +724,8 @@
             console.warn("Firebase Init Error", err);
         }
 
+        let _localDbReady = false; // Forçar uso do Firebase
+
         // Monitoramento de conexão Online/Offline
         function updateConnectionStatus() {
             const el = document.getElementById('sync-status-indicator');
