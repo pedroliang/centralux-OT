@@ -152,7 +152,9 @@
         .dark .sync-pending { background: #312e81; color: #a5b4fc; }
     </style>
     <script src="assets/js/localdb.js"></script>
-    <script src="assets/js/supabase.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="assets/js/papaparse.min.js"></script>
 </head>
 <body class="bg-surface text-on-surface flex h-screen overflow-hidden dark:bg-gray-900 transition-colors duration-300">
@@ -696,37 +698,37 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://fruwdnbysjpaccregbnj.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydXdkbmJ5c2pwYWNjcmVnYm5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjM3NTIsImV4cCI6MjA4OTY5OTc1Mn0.l7R4DGuXTKIxtDPWGfGvKCLHPIXWt8jTYoN-8eeys34';
-        let supabaseClient = null;
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvI_18-FNtGjBXjP51eYnVZU1qO2aYsyE",
+            authDomain: "centralux2026.firebaseapp.com",
+            projectId: "centralux2026",
+            storageBucket: "centralux2026.firebasestorage.app",
+            messagingSenderId: "872877990274",
+            appId: "1:872877990274:web:99c556811906080571af9b",
+            measurementId: "G-SGDS6CN6Z2"
+        };
+        
+        let db = null;
         try {
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-            } else {
-                console.warn("Supabase SDK not found.");
-            }
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            // Habilita persistência offline
+            firebase.firestore().enablePersistence().catch((err) => {
+                if (err.code == 'failed-precondition') {
+                    console.warn('Persistência falhou: multiplas abas abertas');
+                } else if (err.code == 'unimplemented') {
+                    console.warn('Persistência não suportada pelo navegador');
+                }
+            });
         } catch (err) {
-            console.warn("Supabase Init Error", err);
+            console.warn("Firebase Init Error", err);
         }
 
-        // Initialize LocalDB (IndexedDB + Supabase sync)
-        let _localDbReady = false;
+        // Inicialização dos dados
         (async () => {
-            try {
-                _localDbReady = await LocalDB.init(supabaseClient);
-                if (_localDbReady) {
-                    console.log('[App] LocalDB ready — loading data from local store');
-                    await fetchOrders();
-                    await fetchMetrics();
-                    await fetchClientsAndSalespersons();
-                }
-            } catch (err) {
-                console.error('[App] LocalDB init failed, falling back to Supabase-only:', err);
-                // Fallback: load directly from Supabase
-                await fetchOrders();
-                await fetchMetrics();
-                await fetchClientsAndSalespersons();
-            }
+            await fetchOrders();
+            await fetchMetrics();
+            await fetchClientsAndSalespersons();
         })();
 
         // --- 0. Global Photos Map, Selection & Date Helpers --- //
@@ -844,20 +846,17 @@
 
             const ids = Array.from(window.selectedOrders);
             try {
-                if (_localDbReady) {
-                    if (isRelatorios) {
-                        await LocalDB.orders.deleteMany(ids);
-                    } else {
-                        await LocalDB.orders.archiveMany(ids);
-                    }
-                } else if (supabaseClient) {
-                    if (isRelatorios) {
-                        const { error } = await supabaseClient.from('orders').delete().in('id', ids);
-                        if (error) throw error;
-                    } else {
-                        const { error } = await supabaseClient.from('orders').update({ archived: true }).in('id', ids);
-                        if (error) throw error;
-                    }
+                if (db) {
+                    const batch = db.batch();
+                    ids.forEach(id => {
+                        const docRef = db.collection('orders').doc(id);
+                        if (isRelatorios) {
+                            batch.delete(docRef);
+                        } else {
+                            batch.update(docRef, { archived: true });
+                        }
+                    });
+                    await batch.commit();
                 } else {
                     return alert("Erro: Banco não conectado.");
                 }
@@ -1220,11 +1219,8 @@
                     }
                     
                     try {
-                        if (_localDbReady) {
-                            await LocalDB.orders.update(card.dataset.dbId, updateData);
-                        } else if (supabaseClient) {
-                            const { error } = await supabaseClient.from('orders').update(updateData).eq('id', card.dataset.dbId);
-                            if(error) throw error;
+                        if (db) {
+                            await db.collection('orders').doc(card.dataset.dbId).update(updateData);
                         }
                     } catch(err) {
                         console.error("Erro ao salvar movimento:", err);
@@ -1352,11 +1348,10 @@
             card.style.opacity = '0.5';
             card.style.pointerEvents = 'none';
             
-            if (dbId && dbId !== 'undefined' && supabaseClient) {
+            if (dbId && dbId !== 'undefined' && db) {
                 try {
                     // Soft Delete: apenas arquiva para sumir do Kanban
-                    const { error } = await supabaseClient.from('orders').update({ archived: true }).eq('id', dbId);
-                    if (error) throw error;
+                    await db.collection('orders').doc(dbId).update({ archived: true });
                     
                     card.remove();
                     updateCounters();
@@ -1392,13 +1387,10 @@
             if(row) row.style.opacity = '0.5';
             
             try {
-                if (_localDbReady) {
-                    await LocalDB.orders.delete(id);
-                } else if (supabaseClient) {
-                    const { error } = await supabaseClient.from('orders').delete().eq('id', id);
-                    if (error) throw error;
+                if (db) {
+                    await db.collection('orders').doc(id).delete();
                 } else {
-                    throw new Error("Banco n\u00e3o conectado.");
+                    throw new Error("Banco não conectado.");
                 }
                 fetchOrders(); // Kanbans hidden text gets refreshed
                 renderRelatorios();
@@ -1416,22 +1408,24 @@
             try {
                 let data = null;
                 
-                if (_localDbReady) {
-                    data = await LocalDB.orders.getAll({ searchTerm, limit: 200, archived: null, cancelled: null });
-                    // Sort descending by created_at
-                    data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                } else if (supabaseClient) {
-                    let query = supabaseClient.from('orders').select('id, order_id, client_name, salesperson, priority, status, cancelled, is_delivery, created_at, delivery_forecast, route, end_photo_url');
+                if (db) {
+                    let snapshot = await db.collection('orders')
+                        .orderBy('created_at', 'desc')
+                        .limit(200)
+                        .get();
+                    
+                    data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     
                     if (searchTerm) {
-                        query = query.or(`order_id.ilike.%${searchTerm}%,client_name.ilike.%${searchTerm}%,salesperson.ilike.%${searchTerm}%`);
+                        const term = searchTerm.toLowerCase();
+                        data = data.filter(o => 
+                            (o.order_id && o.order_id.toLowerCase().includes(term)) ||
+                            (o.client_name && o.client_name.toLowerCase().includes(term)) ||
+                            (o.salesperson && o.salesperson.toLowerCase().includes(term))
+                        );
                     }
-
-                    const result = await query.order('created_at', { ascending: false }).limit(200);
-                    if (result.error) throw result.error;
-                    data = result.data;
                 } else {
-                    throw new Error("Banco n\u00e3o conectado.");
+                    throw new Error("Banco não conectado.");
                 }
                 
                 if (data && data.length > 0) {
@@ -1544,22 +1538,20 @@
             try {
                 let data = null;
                 
-                if (_localDbReady) {
-                    data = await LocalDB.orders.getAll({ archived: false, cancelled: false, limit: 100 });
-                } else if (supabaseClient) {
-                    const result = await supabaseClient
-                        .from('orders')
-                        .select('id, order_id, client_name, salesperson, priority, status, cancelled, is_delivery, created_at, delivery_forecast, route, end_photo_url')
-                        .eq('archived', false)
-                        .eq('cancelled', false)
-                        .order('created_at', { ascending: false })
-                        .limit(100);
-                    if (result.error) throw result.error;
-                    data = result.data;
+                if (db) {
+                    const snapshot = await db.collection('orders')
+                        .where('archived', '==', false)
+                        .where('cancelled', '==', false)
+                        .orderBy('created_at', 'desc')
+                        .limit(100)
+                        .get();
+                    
+                    data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 } else {
                     document.querySelectorAll('.card').forEach(card => attachDragListeners(card));
                     return;
                 }
+                
                 
                 if (data && data.length > 0) {
                     data.forEach(o => {
@@ -1719,11 +1711,9 @@
         async function fetchClientsAndSalespersons() {
             try {
                 let data = null;
-                if (_localDbReady) {
-                    data = await LocalDB.orders.getAll();
-                } else if (supabaseClient) {
-                    const result = await supabaseClient.from('orders').select('client_name, salesperson');
-                    data = result.data;
+                if (db) {
+                    const snapshot = await db.collection('orders').get();
+                    data = snapshot.docs.map(doc => doc.data());
                 }
                 
                 if (data) {
@@ -1806,28 +1796,27 @@
                                 document.getElementById('np-cliente').value = cliente;
                                 
                                 // Fetch Vendedor from Supabase based on Cliente
-                                if (supabaseClient) {
-                                    const { data, error } = await supabaseClient
-                                        .from('orders')
-                                        .select('salesperson')
-                                        .eq('client_name', cliente)
-                                        .not('salesperson', 'is', null)
-                                        .neq('salesperson', '')
-                                        .order('created_at', { ascending: false })
+                                if (db) {
+                                    const snapshot = await db.collection('orders')
+                                        .where('client_name', '==', cliente)
+                                        .orderBy('created_at', 'desc')
                                         .limit(1)
-                                        .maybeSingle();
+                                        .get();
                                         
-                                    if (data && data.salesperson) {
-                                        const vendedorSelect = document.getElementById('np-vendedor');
-                                        let optionExists = Array.from(vendedorSelect.options).some(opt => opt.value === data.salesperson);
-                                        
-                                        if (!optionExists) {
-                                            const opt = document.createElement('option');
-                                            opt.value = data.salesperson;
-                                            opt.textContent = data.salesperson;
-                                            vendedorSelect.insertBefore(opt, vendedorSelect.lastElementChild); // Insert before "Outro..."
+                                    if (!snapshot.empty) {
+                                        const data = snapshot.docs[0].data();
+                                        if (data && data.salesperson) {
+                                            const vendedorSelect = document.getElementById('np-vendedor');
+                                            let optionExists = Array.from(vendedorSelect.options).some(opt => opt.value === data.salesperson);
+                                            
+                                            if (!optionExists) {
+                                                const opt = document.createElement('option');
+                                                opt.value = data.salesperson;
+                                                opt.textContent = data.salesperson;
+                                                vendedorSelect.insertBefore(opt, vendedorSelect.lastElementChild); // Insert before "Outro..."
+                                            }
+                                            vendedorSelect.value = data.salesperson;
                                         }
-                                        vendedorSelect.value = data.salesperson;
                                     }
                                 }
                             }
@@ -1902,35 +1891,32 @@
                     btn.disabled = false;
                     return;
                 }
-            } else if (supabaseClient) {
-                // Verificar se o pedido já existe (mesmo que arquivado)
-                const { data: existing, error: checkError } = await supabaseClient
-                    .from('orders')
-                    .select('order_id')
-                    .eq('order_id', orderId)
-                    .maybeSingle();
+            } else if (db) {
+                // Verificar se o pedido já existe
+                const snapshot = await db.collection('orders')
+                    .where('order_id', '==', orderId)
+                    .get();
                 
-                if (checkError) {
-                    console.error("Erro ao verificar duplicidade:", checkError);
-                }
-
-                if (existing) {
+                if (!snapshot.empty) {
                     alert(`O pedido "${orderId}" já foi cadastrado anteriormente (pode estar no Kanban ou nos Relatórios). Por favor, use um código diferente.`);
                     btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
                     btn.disabled = false;
                     return;
                 }
 
-                const { data, error } = await supabaseClient.from('orders').insert([newOrder]).select();
-                if (!error && data && data.length > 0) {
+                const docRef = await db.collection('orders').add(newOrder);
+                newOrder.id = docRef.id;
+                
+                if (true) { // Simulate success
+                    let savedData = newOrder;
                     if (photoUrl) {
                         if (!window.orderPhotosMap) window.orderPhotosMap = {};
-                        window.orderPhotosMap[data[0].id] = { end: photoUrl };
+                        window.orderPhotosMap[savedData.id] = { end: photoUrl };
                     }
-                    const card = createCardElement(data[0]);
+                    const card = createCardElement(savedData);
                     const container = document.getElementById('col-recebido').querySelector('.kanban-cards');
                     atualizarAcoesCartao(card, 'col-recebido');
-                    if (data[0].is_delivery) {
+                    if (savedData.is_delivery) {
                         container.prepend(card);
                     } else {
                         container.appendChild(card);
