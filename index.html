@@ -1652,11 +1652,22 @@
                                 try {
                                     await LocalDB.orders.updateMany(idsToMove, { status: column.id });
                                 } catch(err) { console.error("Erro no bulk update", err); }
+                            } else if (db) {
+                                try {
+                                    const batch = db.batch();
+                                    idsToMove.forEach(id => {
+                                        const ref = db.collection('orders').doc(id);
+                                        batch.update(ref, { status: column.id });
+                                    });
+                                    await batch.commit();
+                                } catch(err) {
+                                    console.error("Erro no bulk update Firebase:", err);
+                                }
                             } else if (supabaseClient) {
                                 try {
                                     await supabaseClient.from('orders').update({ status: column.id }).in('id', idsToMove);
                                 } catch(err) {
-                                    console.error("Erro no bulk update", err);
+                                     console.error("Erro no bulk update", err);
                                 }
                             }
 
