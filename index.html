@@ -1646,7 +1646,7 @@
                     if (targetContainer && sourceColId !== column.id) {
                         if (window.selectedOrders.has(draggedCard.dataset.dbId) && window.selectedOrders.size > 1) {
                             const idsToMove = Array.from(window.selectedOrders);
-                            const cardsToMove = Array.from(document.querySelectorAll('.card')).filter(c => idsToMove.includes(c.dataset.dbId));
+                            const cardsToMove = idsToMove.map(id => document.querySelector(`.card[data-db-id="${id}"]`)).filter(el => el !== null);
                             
                             if (_localDbReady) {
                                 try {
