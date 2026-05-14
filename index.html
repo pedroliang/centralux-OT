@@ -1567,13 +1567,12 @@
                 
                 if (db) {
                     const snapshot = await db.collection('orders')
-                        .where('archived', '==', false)
-                        .where('cancelled', '==', false)
                         .orderBy('created_at', 'desc')
                         .limit(100)
                         .get();
                     
-                    data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                                         .filter(o => o.archived !== true && o.cancelled !== true);
                 } else {
                     document.querySelectorAll('.card').forEach(card => attachDragListeners(card));
                     return;
@@ -1826,7 +1825,6 @@
                                 if (db) {
                                     const snapshot = await db.collection('orders')
                                         .where('client_name', '==', cliente)
-                                        .orderBy('created_at', 'desc')
                                         .limit(1)
                                         .get();
                                         
@@ -1883,7 +1881,8 @@
                 status: 'col-recebido', // Recebido is the default column
                 end_photo_url: photoUrl,
                 created_at: getSafeISO(customDate),
-                cancelled: isCancelled
+                cancelled: isCancelled,
+                archived: false
             };
 
             if (_localDbReady) {

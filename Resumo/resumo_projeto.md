@@ -27,4 +27,15 @@ Este arquivo resume o trabalho realizado para sincronizar o repositório, corrig
 - **Link**: [Site Online](https://pedroliang.github.io/centralux-OT/)
 
 ---
-*Resumo atualizado em 27/03/2026*
+
+## Atualização (14/05/2026) - Correções de Migração e Fotos
+- **Ações realizadas**:
+  - **Indicador de Sincronização**: Corrigido o indicador preso em "Iniciando...". Agora ele mostra o status real da conexão de internet (Online/Offline) do navegador.
+  - **Salvamento de Pedidos com Foto**:
+    - Adicionado tratamento de erro global (`try/catch`) no envio de formulário para evitar que o botão fique travado em "Salvando...".
+    - Ajustada a compressão de imagem para qualidade `0.92` e largura máxima de `1600px` para evitar ultrapassar o limite de 1MB do Firestore.
+  - **Correção de Variável**: Declarada a variável `_localDbReady = false` para evitar erro de referência e garantir o uso do Firebase.
+  - **Visualização de Fotos no Relatório**: Atualizada a função de busca de fotos no relatório para usar o Firebase Firestore em vez do Supabase.
+
+---
+*Resumo atualizado em 14/05/2026*
