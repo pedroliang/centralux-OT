@@ -249,9 +249,9 @@
                         <span class="material-symbols-outlined">settings</span>
                     </button>
                 </div>
-                <div id="sync-status-indicator" class="sync-syncing" title="Status da sincronização local/nuvem" onclick="LocalDB.sync.full()">
-                    <span class="material-symbols-outlined sync-icon animate-spin">sync</span>
-                    <span class="sync-text">Iniciando...</span>
+                <div id="sync-status-indicator" class="sync-online" title="Status da conexão">
+                    <span class="material-symbols-outlined sync-icon">cloud_done</span>
+                    <span class="sync-text">Online</span>
                 </div>
                 <div class="flex items-center gap-3 pl-4 border-l border-outline-variant dark:border-gray-700">
                     <div class="text-right">
@@ -723,6 +723,31 @@
         } catch (err) {
             console.warn("Firebase Init Error", err);
         }
+
+        // Monitoramento de conexão Online/Offline
+        function updateConnectionStatus() {
+            const el = document.getElementById('sync-status-indicator');
+            if (!el) return;
+            const iconEl = el.querySelector('.sync-icon');
+            const textEl = el.querySelector('.sync-text');
+            
+            el.classList.remove('sync-online', 'sync-offline', 'sync-syncing', 'sync-error', 'sync-pending');
+            
+            if (navigator.onLine) {
+                el.classList.add('sync-online');
+                iconEl.textContent = 'cloud_done';
+                iconEl.classList.remove('animate-spin');
+                textEl.textContent = 'Online';
+            } else {
+                el.classList.add('sync-offline');
+                iconEl.textContent = 'cloud_off';
+                iconEl.classList.remove('animate-spin');
+                textEl.textContent = 'Offline';
+            }
+        }
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        updateConnectionStatus();
 
         // Inicialização dos dados
         (async () => {
