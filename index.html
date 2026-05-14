@@ -1859,7 +1859,8 @@
             btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Salvando...';
             btn.disabled = true;
 
-            const orderId = document.getElementById('np-codigo').value;
+            try {
+                const orderId = document.getElementById('np-codigo').value;
             const clientName = document.getElementById('np-cliente').value;
             const salesperson = document.getElementById('np-vendedor').value;
             const priority = document.getElementById('np-prioridade').value;
@@ -1973,6 +1974,12 @@
             document.getElementById('form-novo-pedido').reset();
             btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
             btn.disabled = false;
+            } catch (error) {
+                console.error("Erro geral no submit:", error);
+                alert("ERRO AO SALVAR! \n\nDetalhe do erro: " + error.message);
+                btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Salvar e Iniciar';
+                btn.disabled = false;
+            }
         });
 
         // --- 5.5 Edit Order Logic --- //
