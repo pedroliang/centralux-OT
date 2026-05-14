@@ -2197,10 +2197,12 @@
                 if (_localDbReady) {
                     const localOrder = await LocalDB.orders.getById(orderId);
                     if (localOrder) photoData = localOrder[colName];
-                } else if (supabaseClient) {
-                    const { data, error } = await supabaseClient.from('orders').select(colName).eq('id', orderId).single();
-                    if (error) throw error;
-                    if (data) photoData = data[colName];
+                } else if (db) {
+                    const doc = await db.collection('orders').doc(orderId).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        photoData = data[colName];
+                    }
                 }
                 
                 if (photoData) {
