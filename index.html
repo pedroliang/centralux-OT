@@ -1263,28 +1263,7 @@
         }
 
         function solicitarMovimento(card, targetColId, sourceColId) {
-            if (targetColId === 'col-concluido' || targetColId === 'col-enviado') {
-                const modal = document.getElementById('modal-foto-final');
-                document.getElementById('mf-card-id').value = card.dataset.dbId || '';
-                document.getElementById('mf-target-col').value = targetColId;
-                window.__pendingCard = card;
-                window.__pendingSourceCol = sourceColId;
-                
-                // Altera o texto do modal dependendo se foi pra Entrega ou Concluído
-                const modalTitle = modal.querySelector('h2');
-                const modalDesc = modal.querySelector('p');
-                if (targetColId === 'col-enviado') {
-                    modalTitle.textContent = 'Enviar p/ Motoboy';
-                    modalDesc.textContent = 'Deseja anexar a foto do pacote ou da nota antes de sair para entrega?';
-                } else {
-                    modalTitle.textContent = 'Finalizar Pedido';
-                    modalDesc.textContent = 'Deseja anexar uma foto do canhoto assinado para comprovar a conclusão?';
-                }
-                
-                modal.classList.remove('hidden');
-            } else {
-                efetivarMovimento(card, targetColId, sourceColId);
-            }
+            efetivarMovimento(card, targetColId, sourceColId);
         }
 
         function avancarCartao(btn, targetColId) {
