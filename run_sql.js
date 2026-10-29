@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 async function run() {
-    const token = 'sbp_9cb3069a3601ac183118513ed68481d9741d571a';
+    const token = process.env.SUPABASE_ACCESS_TOKEN;
     const ref = 'fruwdnbysjpaccregbnj';
     const query = fs.readFileSync('setup_database.sql', 'utf8');
 
